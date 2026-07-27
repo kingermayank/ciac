@@ -1,0 +1,714 @@
+import "@fontsource/jetbrains-mono/latin-600.css";
+
+/* Coverage in a Click — interactions
+   Calm UI, light at the meaningful moments. Progressive enhancement only. */
+
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---- Circular customer testimonials ------------------------------------ */
+const circularTestimonials = document.querySelector("[data-circular-testimonials]");
+if (circularTestimonials) {
+  const cards = [...circularTestimonials.querySelectorAll("[data-index]")];
+  const quote = circularTestimonials.querySelector("[data-testimonial-quote]");
+  const name = circularTestimonials.querySelector("[data-testimonial-name]");
+  const vehicle = circularTestimonials.querySelector("[data-testimonial-vehicle]");
+  const previous = circularTestimonials.querySelector("[data-testimonial-prev]");
+  const next = circularTestimonials.querySelector("[data-testimonial-next]");
+  let activeIndex = 0;
+  let timer;
+
+  const renderTestimonial = (index) => {
+    activeIndex = (index + cards.length) % cards.length;
+    cards.forEach((card, cardIndex) => {
+      const offset = (cardIndex - activeIndex + cards.length) % cards.length;
+      card.classList.toggle("is-active", offset === 0);
+      card.classList.toggle("is-previous", offset === cards.length - 1);
+      card.classList.toggle("is-next", offset === 1);
+      card.setAttribute("aria-hidden", offset > 1 ? "true" : "false");
+    });
+    const active = cards[activeIndex];
+    quote.textContent = `“${active.dataset.quote}”`;
+    name.textContent = active.dataset.name;
+    vehicle.textContent = active.dataset.vehicle;
+  };
+  const restart = () => {
+    window.clearInterval(timer);
+    if (!reduceMotion) timer = window.setInterval(() => renderTestimonial(activeIndex + 1), 5000);
+  };
+  previous?.addEventListener("click", () => { renderTestimonial(activeIndex - 1); restart(); });
+  next?.addEventListener("click", () => { renderTestimonial(activeIndex + 1); restart(); });
+  circularTestimonials.addEventListener("mouseenter", () => window.clearInterval(timer));
+  circularTestimonials.addEventListener("mouseleave", restart);
+  renderTestimonial(0);
+  restart();
+}
+
+/* ---- Hero video: play only while Get coverage is hovered/focused -------- */
+const heroVideo = document.querySelector("[data-hero-video]");
+const getCoverage = document.querySelector('[data-action="getCoverage"]');
+
+if (heroVideo && getCoverage) {
+  heroVideo.playbackRate = 2;
+
+  const resetHeroVideo = () => {
+    heroVideo.pause();
+    try {
+      heroVideo.currentTime = 0;
+    } catch (_) {
+      // Metadata may not have loaded yet; the poster remains visible.
+    }
+  };
+
+  const playHeroVideo = () => {
+    if (reduceMotion) return;
+    const playback = heroVideo.play();
+    if (playback && typeof playback.catch === "function") playback.catch(() => {});
+  };
+
+  resetHeroVideo();
+  getCoverage.addEventListener("pointerenter", playHeroVideo);
+  getCoverage.addEventListener("pointerleave", resetHeroVideo);
+  getCoverage.addEventListener("focus", playHeroVideo);
+  getCoverage.addEventListener("blur", resetHeroVideo);
+}
+
+/* ---- CTA video: fade in once the browser can actually play it (avoids a
+   stalled poster on slow networks) and nudge .play() explicitly, since some
+   browsers stall the first autoplay until a script call. */
+document.querySelectorAll("[data-cta-video]").forEach((video) => {
+  if (reduceMotion) return; // reduced-motion CSS also hides it; belt-and-braces
+  const start = () => {
+    video.classList.add("is-ready");
+    const p = video.play();
+    if (p && typeof p.catch === "function") p.catch(() => {}); // silently ignore autoplay policy rejections
+  };
+  if (video.readyState >= 3) start();
+  else video.addEventListener("canplay", start, { once: true });
+});
+
+/* ---- Mobile nav ---------------------------------------------------------- */
+const menuButton = document.querySelector("[data-menu-button]");
+const navLinks = document.querySelector("[data-nav-links]");
+
+if (menuButton && navLinks) {
+  const setOpen = (open) => {
+    menuButton.setAttribute("aria-expanded", String(open));
+    menuButton.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    navLinks.classList.toggle("open", open);
+  };
+  menuButton.addEventListener("click", () => {
+    setOpen(menuButton.getAttribute("aria-expanded") !== "true");
+  });
+  navLinks.querySelectorAll("a").forEach((link) =>
+    link.addEventListener("click", () => setOpen(false))
+  );
+}
+
+/* ---- Sticky header state ------------------------------------------------- */
+const header = document.querySelector("[data-header]");
+if (header) {
+  const onScroll = () => header.classList.toggle("is-stuck", window.scrollY > 8);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+/* ---- Scroll reveal ------------------------------------------------------- */
+const revealEls = document.querySelectorAll(".reveal");
+if (reduceMotion || !("IntersectionObserver" in window)) {
+  revealEls.forEach((el) => el.classList.add("in"));
+} else {
+  const revealObserver = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        // stagger children if requested
+        const stagger = el.querySelector("[data-stagger]") || (el.matches("[data-stagger]") ? el : null);
+        if (stagger) {
+          [...stagger.children].forEach((child, i) =>
+            child.style.setProperty("--i", i)
+          );
+        }
+        el.classList.add("in");
+        obs.unobserve(el);
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
+  );
+  revealEls.forEach((el) => revealObserver.observe(el));
+}
+
+/* ---- Count-up stats ------------------------------------------------------ */
+const counters = document.querySelectorAll("[data-count]");
+if (counters.length) {
+  const runCount = (el) => {
+    const target = Number(el.dataset.count);
+    if (reduceMotion || !target) {
+      el.textContent = String(target);
+      return;
+    }
+    const duration = 900;
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = String(Math.round(target * eased));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  if ("IntersectionObserver" in window) {
+    const countObserver = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          runCount(entry.target);
+          obs.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.6 }
+    );
+    counters.forEach((el) => countObserver.observe(el));
+  } else {
+    counters.forEach(runCount);
+  }
+}
+
+/* ---- Quote form: cascading vehicle → mileage → charge reveal ------------- */
+/* Curated EV + hybrid catalog. Not exhaustive — v1 covers the common ones.
+   Keyed by make so cascades are trivial; year range applied at build time. */
+const VEHICLE_CATALOG = {
+  Audi: ["e-tron", "e-tron GT", "Q4 e-tron", "Q8 e-tron"],
+  BMW: ["i3", "i4", "i5", "i7", "iX", "iX3"],
+  Chevrolet: ["Bolt EV", "Bolt EUV", "Volt", "Blazer EV", "Equinox EV"],
+  Chrysler: ["Pacifica Hybrid"],
+  Fiat: ["500e"],
+  Ford: [
+    "Mustang Mach-E",
+    "F-150 Lightning",
+    "Escape Hybrid",
+    "Escape Plug-in Hybrid",
+    "Fusion Hybrid",
+    "Maverick Hybrid",
+  ],
+  Genesis: ["Electrified G80", "GV60", "Electrified GV70"],
+  Honda: ["Accord Hybrid", "CR-V Hybrid", "Clarity", "Insight", "Prologue"],
+  Hyundai: [
+    "Kona Electric",
+    "Ioniq 5",
+    "Ioniq 6",
+    "Ioniq Hybrid",
+    "Ioniq Plug-in Hybrid",
+    "Sonata Hybrid",
+    "Tucson Hybrid",
+  ],
+  Jaguar: ["I-PACE"],
+  Kia: [
+    "Soul EV",
+    "Niro EV",
+    "Niro Hybrid",
+    "EV6",
+    "EV9",
+    "Optima Hybrid",
+    "Sorento Hybrid",
+  ],
+  Lexus: ["ES Hybrid", "NX Hybrid", "RX Hybrid", "RZ"],
+  Lucid: ["Air"],
+  Mazda: ["MX-30", "CX-90 PHEV"],
+  "Mercedes-Benz": ["EQB", "EQE", "EQE SUV", "EQS", "EQS SUV"],
+  Mini: ["Cooper SE"],
+  Nissan: ["Leaf", "Ariya"],
+  Polestar: ["Polestar 2", "Polestar 3"],
+  Porsche: ["Taycan"],
+  Rivian: ["R1T", "R1S"],
+  Subaru: ["Solterra", "Crosstrek Hybrid"],
+  Tesla: ["Model 3", "Model Y", "Model S", "Model X"],
+  Toyota: [
+    "Prius",
+    "Prius Prime",
+    "RAV4 Hybrid",
+    "RAV4 Prime",
+    "Camry Hybrid",
+    "Highlander Hybrid",
+    "Corolla Hybrid",
+    "bZ4X",
+  ],
+  Volkswagen: ["ID.4", "ID.7", "e-Golf"],
+  Volvo: ["XC40 Recharge", "XC60 Recharge", "XC90 Recharge", "C40 Recharge"],
+};
+
+const CURRENT_YEAR = 2026;
+const OLDEST_YEAR = 2011;
+
+const quoteForm = document.querySelector("[data-quote-form]");
+if (quoteForm) {
+  const yearSel = quoteForm.querySelector("[data-qf-year]");
+  const makeSel = quoteForm.querySelector("[data-qf-make]");
+  const makePicker = quoteForm.querySelector("[data-qf-make-picker]");
+  const makeTrigger = quoteForm.querySelector("[data-qf-make-trigger]");
+  const makeValue = quoteForm.querySelector("[data-qf-make-value]");
+  const makeList = quoteForm.querySelector("[data-qf-make-list]");
+  const quoteSheetElement = quoteForm.closest("[data-quote-sheet]");
+  const modelSel = quoteForm.querySelector("[data-qf-model]");
+  const milesInput = quoteForm.querySelector("[data-qf-miles]");
+  const nextBtn = quoteForm.querySelector("[data-qf-next]");
+  const backBtn = quoteForm.querySelector("[data-qf-back]");
+  const submitBtn = quoteForm.querySelector("[data-qf-submit]");
+  const restartBtn = quoteForm.querySelector("[data-qf-restart]");
+  const activateLink = quoteForm.querySelector("[data-qf-activate]");
+  const activateLabel = quoteForm.querySelector("[data-qf-activate-label]");
+  const steps = [...quoteForm.querySelectorAll(".qf-step")];
+  const dots = [...quoteForm.querySelectorAll(".qf-dot")];
+  const recap = quoteForm.querySelector("[data-qf-recap]");
+  const quoteHead = quoteForm.querySelector("[data-qf-quote-head]");
+  const quoteVehicle = quoteForm.querySelector("[data-qf-quote-vehicle]");
+  const quoteMileage = quoteForm.querySelector("[data-qf-quote-mileage]");
+  const priceEl = quoteForm.querySelector("[data-qf-price]");
+  const standardBlock = quoteForm.querySelector("[data-qf-quote-standard]");
+  const checkBlock = quoteForm.querySelector("[data-qf-quote-check]");
+  const planTabs = [...quoteForm.querySelectorAll("[data-qf-plan]")];
+  const srLive = quoteForm.querySelector("[data-qf-sr]");
+
+  let currentStep = 0;
+  let selectedPlan = "monthly";
+  const state = { year: "", make: "", model: "", miles: 0 };
+  const makeNames = Object.keys(VEHICLE_CATALOG).sort();
+  const logoUrlFor = (make) =>
+    `https://www.carlogos.org/car-logos/${make.toLowerCase().replaceAll(" ", "-")}-logo.png`;
+
+  quoteSheetElement?.appendChild(makeList);
+
+  const closeMakeList = ({ restoreFocus = false } = {}) => {
+    makeList.hidden = true;
+    makeTrigger.setAttribute("aria-expanded", "false");
+    if (restoreFocus) makeTrigger.focus({ preventScroll: true });
+  };
+
+  const syncMakePicker = (placeholder = "Choose make") => {
+    makeTrigger.disabled = makeSel.disabled;
+    makeValue.replaceChildren();
+
+    if (state.make) {
+      const logo = document.createElement("img");
+      logo.src = logoUrlFor(state.make);
+      logo.alt = "";
+      logo.width = 32;
+      logo.height = 24;
+      logo.addEventListener("error", () => logo.remove());
+      const text = document.createElement("span");
+      text.textContent = state.make;
+      makeValue.append(logo, text);
+    } else {
+      makeValue.textContent = placeholder;
+    }
+
+    makeList.querySelectorAll("[role='option']").forEach((option) => {
+      option.setAttribute("aria-selected", String(option.dataset.value === state.make));
+    });
+  };
+
+  const chooseMake = (make) => {
+    makeSel.value = make;
+    makeSel.dispatchEvent(new Event("change", { bubbles: true }));
+    closeMakeList({ restoreFocus: true });
+  };
+
+  const renderMakeOptions = () => {
+    makeList.replaceChildren();
+    makeNames.forEach((make) => {
+      const option = document.createElement("div");
+      option.className = "qf-make-option";
+      option.dataset.value = make;
+      option.setAttribute("role", "option");
+      option.setAttribute("aria-selected", String(make === state.make));
+      option.tabIndex = -1;
+
+      const logo = document.createElement("img");
+      logo.src = logoUrlFor(make);
+      logo.alt = "";
+      logo.width = 32;
+      logo.height = 24;
+      logo.loading = "lazy";
+      logo.addEventListener("error", () => logo.remove());
+
+      const label = document.createElement("span");
+      label.textContent = make;
+      option.append(logo, label);
+      option.addEventListener("click", () => chooseMake(make));
+      makeList.appendChild(option);
+    });
+  };
+
+  const openMakeList = (edge = "start") => {
+    if (makeTrigger.disabled) return;
+    makeList.hidden = false;
+    makeTrigger.setAttribute("aria-expanded", "true");
+
+    const triggerRect = makeTrigger.getBoundingClientRect();
+    const sheetRect = quoteSheetElement.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - triggerRect.bottom - 16;
+    const spaceAbove = triggerRect.top - 16;
+    const openBelow = spaceBelow >= 176 || spaceBelow >= spaceAbove;
+    const availableHeight = Math.max(132, Math.min(272, openBelow ? spaceBelow : spaceAbove));
+    const listTop = openBelow
+      ? triggerRect.bottom - sheetRect.top + 4
+      : triggerRect.top - sheetRect.top - availableHeight - 4;
+
+    makeList.style.left = `${triggerRect.left - sheetRect.left}px`;
+    makeList.style.top = `${listTop}px`;
+    makeList.style.width = `${triggerRect.width}px`;
+    makeList.style.maxHeight = `${availableHeight}px`;
+
+    const options = [...makeList.querySelectorAll("[role='option']")];
+    const selected = options.find((option) => option.dataset.value === state.make);
+    const target = selected || (edge === "end" ? options.at(-1) : options[0]);
+    target?.focus({ preventScroll: true });
+  };
+
+  makeTrigger.addEventListener("click", () => {
+    if (makeList.hidden) openMakeList();
+    else closeMakeList({ restoreFocus: true });
+  });
+  makeTrigger.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      openMakeList(event.key === "ArrowUp" ? "end" : "start");
+    }
+  });
+  makeList.addEventListener("keydown", (event) => {
+    const options = [...makeList.querySelectorAll("[role='option']")];
+    const index = options.indexOf(document.activeElement);
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const offset = event.key === "ArrowDown" ? 1 : -1;
+      options[(index + offset + options.length) % options.length]?.focus();
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (index >= 0) chooseMake(options[index].dataset.value);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      closeMakeList({ restoreFocus: true });
+    } else if (event.key === "Tab") {
+      closeMakeList();
+    }
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (
+      !makeList.hidden &&
+      !makePicker.contains(event.target) &&
+      !makeList.contains(event.target)
+    ) {
+      closeMakeList();
+    }
+  });
+
+  /* populate years newest → oldest */
+  for (let y = CURRENT_YEAR; y >= OLDEST_YEAR; y--) {
+    const opt = document.createElement("option");
+    opt.value = String(y);
+    opt.textContent = String(y);
+    yearSel.appendChild(opt);
+  }
+
+  const setPlaceholder = (sel, text) => {
+    sel.innerHTML = "";
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = text;
+    sel.appendChild(opt);
+  };
+
+  const populateMakes = () => {
+    setPlaceholder(makeSel, "Choose make");
+    makeNames.forEach((make) => {
+        const opt = document.createElement("option");
+        opt.value = make;
+        opt.textContent = make;
+        makeSel.appendChild(opt);
+      });
+    makeSel.disabled = false;
+    renderMakeOptions();
+    syncMakePicker();
+  };
+  const populateModels = (make) => {
+    setPlaceholder(modelSel, "Choose model");
+    (VEHICLE_CATALOG[make] || []).forEach((model) => {
+      const opt = document.createElement("option");
+      opt.value = model;
+      opt.textContent = model;
+      modelSel.appendChild(opt);
+    });
+    modelSel.disabled = !make;
+  };
+  const resetMake = () => {
+    setPlaceholder(makeSel, "Choose year first");
+    makeSel.disabled = true;
+    state.make = "";
+    closeMakeList();
+    makeList.replaceChildren();
+    syncMakePicker("Choose year first");
+  };
+  const resetModel = (msg = "Choose make first") => {
+    setPlaceholder(modelSel, msg);
+    modelSel.disabled = true;
+    state.model = "";
+  };
+
+  const refreshNextEnabled = () => {
+    nextBtn.disabled = !(state.year && state.make && state.model);
+  };
+
+  yearSel.addEventListener("change", () => {
+    state.year = yearSel.value;
+    if (state.year) populateMakes();
+    else resetMake();
+    resetModel();
+    refreshNextEnabled();
+  });
+  makeSel.addEventListener("change", () => {
+    state.make = makeSel.value;
+    if (state.make) populateModels(state.make);
+    else resetModel();
+    syncMakePicker();
+    refreshNextEnabled();
+  });
+  modelSel.addEventListener("change", () => {
+    state.model = modelSel.value;
+    refreshNextEnabled();
+  });
+
+  /* mileage: format with commas as they type */
+  const formatMiles = (n) =>
+    Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  milesInput.addEventListener("input", (e) => {
+    const raw = e.target.value.replace(/[^\d]/g, "");
+    const n = raw === "" ? 0 : parseInt(raw, 10);
+    state.miles = n;
+    e.target.value = raw === "" ? "" : formatMiles(n);
+    submitBtn.disabled = !(state.miles > 0 && state.miles < 400000);
+  });
+
+  /* step transitions */
+  const setStep = (target, direction = "forward") => {
+    if (target === currentStep) return;
+    const outgoing = steps[currentStep];
+    const incoming = steps[target];
+    if (!incoming) return;
+
+    outgoing.hidden = true;
+    incoming.classList.remove("qf-step-back");
+    if (direction === "back") incoming.classList.add("qf-step-back");
+    incoming.hidden = false;
+    // force reflow so the entry animation always replays
+    void incoming.offsetWidth;
+
+    currentStep = target;
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("is-current", i === target);
+      dot.classList.toggle("is-past", i < target);
+    });
+
+    const focusables = incoming.querySelectorAll(
+      "select:not([disabled]), input, button:not([disabled])"
+    );
+    if (focusables[0]) {
+      setTimeout(() => focusables[0].focus({ preventScroll: true }), 60);
+    }
+  };
+
+  nextBtn.addEventListener("click", () => {
+    if (nextBtn.disabled) return;
+    recap.innerHTML = `<strong>${state.year} ${state.make} ${state.model}</strong> · one more question.`;
+    setStep(1, "forward");
+    submitBtn.disabled = !(state.miles > 0);
+  });
+  backBtn.addEventListener("click", () => setStep(0, "back"));
+
+  /* pricing: placeholder rate table until real data lands */
+  const PRICING = { monthly: 39, once: 1290 };
+  const isOldVehicle = () => {
+    const age = CURRENT_YEAR - Number(state.year || CURRENT_YEAR);
+    return age > 6 || state.miles > 75000;
+  };
+  const paintPrice = () => {
+    if (selectedPlan === "monthly") {
+      priceEl.innerHTML = `$${PRICING.monthly}<span>/mo</span>`;
+    } else {
+      priceEl.innerHTML = `$${PRICING.once.toLocaleString("en-US")}<span>one-time</span>`;
+    }
+  };
+  planTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      selectedPlan = tab.dataset.qfPlan;
+      planTabs.forEach((t) => {
+        const active = t === tab;
+        t.classList.toggle("is-active", active);
+        t.setAttribute("aria-selected", String(active));
+      });
+      paintPrice();
+      srLive.textContent =
+        selectedPlan === "monthly"
+          ? `Monthly plan selected, $${PRICING.monthly} per month.`
+          : `Pay once selected, $${PRICING.once.toLocaleString("en-US")} one-time.`;
+    });
+  });
+
+  /* submit → the charge moment */
+  const revealQuote = () => {
+    quoteVehicle.textContent = `${state.year} ${state.make} ${state.model}`;
+    quoteMileage.textContent = `${formatMiles(state.miles)} mi`;
+
+    if (isOldVehicle()) {
+      quoteHead.textContent = "Health check first";
+      standardBlock.hidden = true;
+      checkBlock.hidden = false;
+      activateLabel.textContent = "Start health check";
+      activateLink.setAttribute("href", "#how");
+      srLive.textContent =
+        "Your vehicle qualifies for a free RepairWise battery health report first.";
+    } else {
+      quoteHead.textContent = "Quote ready";
+      standardBlock.hidden = false;
+      checkBlock.hidden = true;
+      activateLabel.textContent = "Activate coverage";
+      activateLink.setAttribute("href", "#plans");
+      selectedPlan = "monthly";
+      planTabs.forEach((t) => {
+        const active = t.dataset.qfPlan === "monthly";
+        t.classList.toggle("is-active", active);
+        t.setAttribute("aria-selected", String(active));
+      });
+      paintPrice();
+      srLive.textContent = `Quote ready. ${state.year} ${state.make} ${state.model}. Monthly plan, $${PRICING.monthly} per month.`;
+    }
+
+    setStep(2, "forward");
+    // fire the beam once, on the actual meaningful moment
+    if (reduceMotion) {
+      quoteForm.classList.add("is-charged");
+    } else {
+      setTimeout(() => quoteForm.classList.add("is-charged"), 120);
+    }
+  };
+
+  quoteForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (submitBtn.disabled) return;
+    revealQuote();
+  });
+
+  restartBtn.addEventListener("click", () => {
+    quoteForm.classList.remove("is-charged");
+    state.year = "";
+    state.make = "";
+    state.model = "";
+    state.miles = 0;
+    yearSel.value = "";
+    resetMake();
+    resetModel();
+    milesInput.value = "";
+    nextBtn.disabled = true;
+    submitBtn.disabled = true;
+    setStep(0, "back");
+  });
+}
+
+/* ---- Quote bottom sheet ------------------------------------------------- */
+const quoteSheet = document.querySelector("[data-quote-sheet]");
+const quoteOpeners = [...document.querySelectorAll("[data-quote-open]")];
+
+if (quoteSheet && quoteOpeners.length) {
+  const closeButton = quoteSheet.querySelector("[data-quote-close]");
+  const activateLink = quoteSheet.querySelector("[data-qf-activate]");
+  let lastTrigger = null;
+  let closeTimer = 0;
+
+  const focusCurrentStep = () => {
+    const currentStep = quoteSheet.querySelector(".qf-step:not([hidden])");
+    const target = currentStep?.querySelector(
+      "select:not([disabled]), input:not([disabled]), button:not([disabled]), a[href]"
+    );
+    (target || closeButton)?.focus({ preventScroll: true });
+  };
+
+  const openQuoteSheet = (trigger) => {
+    window.clearTimeout(closeTimer);
+    lastTrigger = trigger;
+    if (!quoteSheet.open) quoteSheet.showModal();
+    document.documentElement.classList.add("has-quote-sheet");
+    requestAnimationFrame(() => {
+      quoteSheet.classList.add("is-open");
+      window.setTimeout(focusCurrentStep, reduceMotion ? 0 : 80);
+    });
+  };
+
+  const closeQuoteSheet = (restoreFocus = true) => {
+    if (!quoteSheet.open) return;
+    quoteSheet.classList.remove("is-open");
+    const finish = () => {
+      if (quoteSheet.open) quoteSheet.close();
+      document.documentElement.classList.remove("has-quote-sheet");
+      if (restoreFocus && lastTrigger) lastTrigger.focus({ preventScroll: true });
+    };
+    if (reduceMotion) finish();
+    else closeTimer = window.setTimeout(finish, 240);
+  };
+
+  quoteOpeners.forEach((trigger) => {
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      openQuoteSheet(trigger);
+    });
+  });
+
+  closeButton?.addEventListener("click", () => closeQuoteSheet());
+  quoteSheet.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeQuoteSheet();
+  });
+  quoteSheet.addEventListener("click", (event) => {
+    if (event.target === quoteSheet) closeQuoteSheet();
+  });
+  quoteSheet.addEventListener("close", () => {
+    quoteSheet.classList.remove("is-open");
+    document.documentElement.classList.remove("has-quote-sheet");
+  });
+  activateLink?.addEventListener("click", () => closeQuoteSheet(false));
+}
+
+/* ---- FAQ accordion ------------------------------------------------------- */
+const faq = document.querySelector("[data-faq]");
+if (faq) {
+  const items = faq.querySelectorAll(".faq-item");
+  items.forEach((item) => {
+    const btn = item.querySelector(".faq-q");
+    const panel = item.querySelector(".faq-a");
+    btn.addEventListener("click", () => {
+      const isOpen = item.classList.contains("open");
+      // close others for a clean single-open accordion
+      items.forEach((other) => {
+        if (other === item) return;
+        other.classList.remove("open");
+        other.querySelector(".faq-q").setAttribute("aria-expanded", "false");
+        other.querySelector(".faq-a").style.height = "0px";
+      });
+      if (isOpen) {
+        item.classList.remove("open");
+        btn.setAttribute("aria-expanded", "false");
+        panel.style.height = "0px";
+      } else {
+        item.classList.add("open");
+        btn.setAttribute("aria-expanded", "true");
+        panel.style.height = panel.firstElementChild.offsetHeight + "px";
+      }
+    });
+  });
+  // keep an open panel correctly sized on resize
+  window.addEventListener("resize", () => {
+    const open = faq.querySelector(".faq-item.open");
+    if (open) {
+      const panel = open.querySelector(".faq-a");
+      panel.style.height = panel.firstElementChild.offsetHeight + "px";
+    }
+  });
+}

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+output/
+.playwright-cli/
+.claude/
+.codex/
+
+# Local visual-generation archive; production-ready assets live in optimized/.
+src/assets/higgsfield/
+src/assets/hero-backdrop-a1.png
+
+.DS_Store
+*.log
+
+.env
+.env.*
+!.env.example
