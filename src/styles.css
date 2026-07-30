@@ -4,11 +4,32 @@
    Tokens: ice-blue canvas · cool ink · cobalt action · charge-green light.
    ========================================================================= */
 
-/* ---- Brand fonts: Geist for display + text ------------------------------ */
+/* ---- Brand fonts: General Sans (titles + body) + Geist Mono kickers ---- */
 @font-face {
-  font-family: "Geist";
-  src: url("/src/assets/geist-latin.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "General Sans";
+  src: url("/src/assets/general-sans-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/src/assets/general-sans-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/src/assets/general-sans-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/src/assets/general-sans-700.woff2") format("woff2");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -31,11 +52,27 @@
   --hairline-strong: #d4deeb;
   --cobalt: #0068f9;
   --cobalt-deep: #024bb1;
+  --cobalt-deeper: #01327a;
   --cobalt-tint: #eaf2fe;
+  --cobalt-gradient: linear-gradient(
+    90deg,
+    var(--cobalt) 0%,
+    var(--cobalt-deep) 100%
+  );
+  --cobalt-gradient-hover: linear-gradient(
+    90deg,
+    #1a75f9 0%,
+    var(--cobalt-deeper) 100%
+  );
   --charge: #0bc98b;
   --charge-deep: #048862;
   --charge-glow: #7ff2c8;
   --charge-tint: #e9faf3;
+  --charge-gradient: linear-gradient(
+    90deg,
+    var(--charge) 0%,
+    var(--charge-deep) 100%
+  );
 
   /* ---- elevation ---- */
   --shadow-subtle: rgba(18, 28, 48, 0.07) 0 1px 1px 0,
@@ -47,9 +84,9 @@
     0 10px 44px -8px rgba(11, 201, 139, 0.35);
 
   /* ---- type ---- */
-  --font-display: "Geist", Inter, -apple-system, BlinkMacSystemFont,
+  --font-display: "General Sans", Inter, -apple-system, BlinkMacSystemFont,
     "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  --font-text: "Geist", Inter, -apple-system,
+  --font-text: "General Sans", Inter, -apple-system,
     BlinkMacSystemFont, "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --font-eyebrow: "Geist Mono", "SFMono-Regular", Consolas,
     "Liberation Mono", monospace;
@@ -80,13 +117,21 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  overflow-x: clip;
+  scroll-padding-top: 5.5rem;
 }
 
 body {
-  min-width: 320px;
+  min-width: 0;
   margin: 0;
   background: var(--canvas);
   line-height: 1.6;
+  overflow-x: clip;
+}
+
+main > section[id],
+#quote {
+  scroll-margin-top: 5.5rem;
 }
 
 h1,
@@ -94,7 +139,7 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
   text-wrap: balance;
 }
@@ -185,21 +230,25 @@ svg {
   color: var(--btn-fg);
   font-family: var(--font-display);
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
   transition: transform 180ms cubic-bezier(0.2, 0, 0, 1),
-    background-color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    background 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 .btn .icon {
   width: 1.125rem;
   height: 1.125rem;
 }
 .btn-primary {
+  --btn-bg: var(--cobalt);
   box-shadow: 0 1px 2px rgba(2, 75, 177, 0.24), 0 8px 20px -8px rgba(0, 104, 249, 0.5);
 }
-.btn-primary:hover {
-  background: var(--cobalt-deep);
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  --btn-bg: var(--charge);
+  background: var(--btn-bg);
+  box-shadow: 0 1px 2px rgba(4, 136, 98, 0.24), 0 8px 20px -8px rgba(11, 201, 139, 0.45);
   transform: translateY(-1px);
 }
 .btn-contact:hover {
@@ -399,7 +448,20 @@ svg {
 }
 .hero h1 .lead-light,
 .title-accent {
+  /* Keep inline so glyphs share the parent line box (no clipped inline-block). */
+  display: inline;
   color: var(--cobalt);
+  font-weight: inherit;
+  /* Solid fill — gradient + background-clip:text crops edge glyphs (f, y). */
+  background-image: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: unset;
+  /* Match parent tracking — open spacing made accents look loose. */
+  letter-spacing: inherit;
+  padding-inline: 0;
+  margin: 0;
+  overflow: visible;
 }
 .hero-sub {
   margin-top: 1.5rem;
@@ -538,7 +600,7 @@ body {
    component). Surface lives on the pill, not a full-width band; motion calm.
    ========================================================================= */
 .site-header {
-  padding-top: clamp(0.6rem, 1.6vw, 1.1rem);
+  padding-top: max(clamp(0.6rem, 1.6vw, 1.1rem), env(safe-area-inset-top));
   pointer-events: none; /* transparent gutter never blocks the hero beneath */
 }
 .site-header.is-stuck {
@@ -548,6 +610,7 @@ body {
   backdrop-filter: none;
 }
 .nav-shell {
+  position: relative;
   pointer-events: auto;
   min-height: 60px;
   padding: 0.4rem 0.5rem 0.4rem 1.1rem;
@@ -568,21 +631,12 @@ body {
   width: 40px;
   height: 40px;
 }
-/* Mobile dropdown drops from just under the floating pill. */
-@media (max-width: 899px) {
-  .nav-links {
-    top: 72px;
-  }
-}
 /* On narrow screens the pill must fit brand mark + primary CTA + menu, so the
    wordmark is dropped (the logo mark still carries the brand). */
 @media (max-width: 639px) {
   .nav-shell {
     padding-left: 0.75rem;
     gap: 0.5rem;
-  }
-  .nav-shell .brand-wordmark {
-    display: none;
   }
   .nav-shell .brand {
     gap: 0;
@@ -650,8 +704,20 @@ body {
 
 .hero h1 .lead-light,
 .title-accent {
+  /* Keep inline so glyphs share the parent line box (no clipped inline-block). */
+  display: inline;
   color: var(--cobalt);
   font-weight: inherit;
+  /* Solid fill — gradient + background-clip:text crops edge glyphs (f, y). */
+  background-image: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: unset;
+  /* Match parent tracking — open spacing made accents look loose. */
+  letter-spacing: inherit;
+  padding-inline: 0;
+  margin: 0;
+  overflow: visible;
 }
 
 .hero-sub {
@@ -712,14 +778,14 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 3rem;
+  gap: 1.25rem;
   padding: 5rem 0;
 }
 
 .hero-editorial__copy {
   position: relative;
   z-index: 2;
-  width: min(100%, 40rem);
+  width: min(100%, 44rem);
 }
 
 .hero-editorial__kicker {
@@ -737,8 +803,8 @@ body {
   margin: 0;
   color: #000;
   font-family: var(--font-display);
-  font-size: clamp(3.35rem, 5vw, 4.1rem);
-  font-weight: 500;
+  font-size: clamp(3.1rem, 4vw, 3.6rem);
+  font-weight: 600;
   letter-spacing: -0.055em;
   line-height: 0.98;
 }
@@ -747,7 +813,7 @@ body {
   max-width: 36rem;
   margin-top: 1.5rem;
   color: rgba(0, 0, 0, 0.58);
-  font-family: "Geist", var(--font-text);
+  font-family: var(--font-text);
   font-size: 1.125rem;
   line-height: 1.6;
 }
@@ -765,14 +831,14 @@ body {
   padding: 0.7rem 0.9rem;
   border: 0;
   border-radius: var(--radius-pill);
-  font-family: "Geist", var(--font-text);
+  font-family: var(--font-display);
   font-size: 1rem;
-  font-weight: 450;
+  font-weight: 600;
   box-shadow: none;
 }
 /* Header pill CTAs sit smaller so the floating bar keeps more breathing room. */
 .nav-actions .btn {
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   padding: 0.45rem 1.05rem;
   font-size: 0.9375rem;
 }
@@ -808,16 +874,27 @@ body {
 .nav-actions .btn-primary,
 .plans .btn-primary,
 .cta .btn-primary {
-  --btn-bg: #0068f9;
+  --btn-bg: var(--cobalt);
   --btn-fg: #fff;
+}
+.hero.hero--editorial .btn-primary:hover,
+.hero.hero--editorial .btn-primary:focus-visible,
+.nav-actions .btn-primary:hover,
+.nav-actions .btn-primary:focus-visible,
+.plans .btn-primary:hover,
+.plans .btn-primary:focus-visible,
+.cta .btn-primary:hover,
+.cta .btn-primary:focus-visible {
+  --btn-bg: var(--charge);
+  background: var(--btn-bg);
 }
 
 .hero-editorial__image {
   position: absolute;
   z-index: 1;
-  right: 0;
+  right: -1rem;
   bottom: 0;
-  width: clamp(18rem, 31vw, 27rem);
+  width: clamp(16rem, 28vw, 24rem);
   height: auto;
   max-height: 92%;
   object-fit: contain;
@@ -860,43 +937,58 @@ body {
 
 @media (max-width: 639px) {
   .nav-shell {
-    width: min(100% - 3rem, 32rem);
+    width: min(100% - 2rem, 32rem);
   }
 
   .hero.hero--editorial {
-    min-height: 100svh;
+    min-height: auto;
+    overflow: hidden;
   }
 
   .hero-editorial__inner {
-    width: min(100% - 3rem, 32rem);
+    width: min(100% - 2rem, 32rem);
     display: block;
-    padding: 4.75rem 0 3.5rem;
+    padding: 5.5rem 0 3rem;
+  }
+
+  .hero-editorial__copy {
+    width: 100%;
   }
 
   .hero-editorial__image {
-    right: -1.25rem;
-    width: 11rem;
+    right: 0;
+    width: min(11rem, 42vw);
     max-height: 44%;
     opacity: 0.18;
   }
 
   .hero.hero--editorial h1 {
-    font-size: clamp(3.15rem, 14vw, 3.75rem);
-    line-height: 0.95;
+    font-size: clamp(2.5rem, 11vw, 3.25rem);
+    line-height: 1.05;
   }
 
   .hero.hero--editorial .hero-sub {
-    max-width: 18rem;
-    margin-top: 1.5rem;
+    max-width: none;
+    margin-top: 1.25rem;
     font-size: 1.0625rem;
-    line-height: 1.7;
+    line-height: 1.65;
+  }
+
+  .hero.hero--editorial .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero.hero--editorial .btn {
+    width: 100%;
   }
 }
 
 /* Vehicle-brand rail — a calm, path-driven trust signal beneath the hero. */
 .vehicle-ticker {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   padding: clamp(3rem, 5vw, 4.5rem) 0 clamp(2rem, 4vw, 3.25rem);
   border-top: 1px solid rgba(18, 28, 48, 0.12);
   border-bottom: 1px solid rgba(18, 28, 48, 0.12);
@@ -927,9 +1019,11 @@ body {
   color: var(--ink);
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+  overflow: visible;
+  padding-block: 0;
 }
 
 .vehicle-ticker__stage {
@@ -1090,6 +1184,26 @@ body {
   border: 0;
 }
 
+@media (max-width: 899px) {
+  #how > .container {
+    width: min(100% - 3rem, 1120px);
+  }
+
+  #how .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 1.25rem;
+  }
+
+  #how .step h3 {
+    white-space: normal;
+  }
+
+  #how .step-illo {
+    width: 6.5rem;
+    height: 6.5rem;
+  }
+}
+
 #how .step,
 #how .step + .step {
   padding: 1.5rem 1rem 2.25rem 0;
@@ -1117,24 +1231,31 @@ body {
   justify-content: center;
 }
 
+#how .step-illo {
+  order: 1;
+  width: 7.5rem;
+  height: 7.5rem;
+  margin: 0.9rem auto 0;
+  margin-bottom: 8px; /* +8px between image and STEP label */
+  flex: 0 0 auto;
+}
+
 #how .step-illo img {
+  display: block;
+  width: 100%;
+  height: 100%;
   margin-inline: auto;
+  object-fit: contain;
   object-position: center center;
+  transform: none;
 }
 
-/* Pull the four illustrations 24px closer together without changing card widths. */
-
-/* Optical-size corrections: the source SVGs have different internal whitespace. */
-#how .step:nth-child(2) .step-illo img {
-  transform: scale(1.18);
+#how .step h3 {
+  order: 3;
+  /* 8px less between STEP label and title (on top of margin-top: auto) */
+  position: relative;
+  top: -8px;
 }
-
-#how .step:nth-child(4) .step-illo img {
-  transform: scale(1.28);
-}
-
-#how .step-illo { order: 1; }
-#how .step h3 { order: 3; }
 #how .step p { order: 4; }
 
 #how .step-num::before {
@@ -1152,6 +1273,9 @@ body {
   border-left: 0;
 }
 #how .step .step-illo {
+  transform: none;
+}
+#how .step .step-illo img {
   transform: none;
 }
 #how .steps {
@@ -1248,8 +1372,10 @@ body {
 .section-head h2 {
   margin-top: 0;
   font-size: clamp(2.5rem, 5vw, 4.6rem);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  overflow: visible;
+  padding-block: 0.18em;
 }
 
 .section-head p {
@@ -1733,6 +1859,7 @@ body {
   line-height: 1;
 }
 .qc-total .price span {
+  margin-left: 4px;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--ink-mute);
@@ -1999,16 +2126,21 @@ body {
   background: var(--surface-ivory);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
+  overflow: visible;
 }
 .qf-plan-tab {
   flex: 1;
-  padding: 0.5rem 0.75rem;
+  min-width: 0;
+  padding: 0.55rem 1rem;
   border: 0;
   background: transparent;
   color: var(--ink-soft);
   font-family: var(--font-display);
   font-size: 0.875rem;
   font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: visible;
   border-radius: var(--radius-pill);
   cursor: pointer;
   transition: background-color 180ms ease, color 180ms ease;
@@ -2159,8 +2291,10 @@ body {
 .section-head h2 {
   margin-top: 1rem;
   font-size: clamp(2rem, 4vw, 2.85rem);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+  overflow: visible;
+  padding-block: 0.18em;
 }
 .section-head p {
   margin-top: 1rem;
@@ -2272,7 +2406,8 @@ body {
 .road-band-marker {
   display: block;
   margin-bottom: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
   font-family: "Geist Mono", var(--font-eyebrow);
   font-size: 0.75rem;
   font-weight: 500;
@@ -2284,7 +2419,20 @@ body {
   margin-inline: auto;
   font-size: clamp(2rem, calc(8vw - 0.5rem), 4rem);
   line-height: 0.98;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.045em;
+  overflow: visible;
+  padding-block: 0;
+}
+.road-band .title-accent {
+  color: var(--charge);
+  background-image: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: var(--charge);
+}
+
+.title-accent-dot {
+  color: var(--charge);
 }
 .road-band-link {
   display: inline-flex;
@@ -2373,7 +2521,7 @@ body {
 .bento-stat {
   font-family: var(--font-display);
   font-size: clamp(2.75rem, 6vw, 3.5rem);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
@@ -2708,12 +2856,13 @@ body {
 .plan .plan-price {
   font-family: var(--font-display);
   font-size: 2.4rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 .plan .plan-price span {
+  margin-left: 4px;
   font-size: 0.9375rem;
   font-weight: 500;
   color: var(--ink-mute);
@@ -2916,8 +3065,8 @@ body {
 }
 .cta h2 {
   font-size: clamp(2rem, 4.5vw, 3rem);
-  line-height: 1.06;
-  letter-spacing: -0.02em;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
   max-width: 20ch;
   margin-inline: auto;
 }
@@ -2987,7 +3136,7 @@ body {
   background: none;
   outline: none;
   font-family: var(--font-text);
-  font-size: 0.9375rem;
+  font-size: 1rem; /* 16px — avoids iOS focus zoom */
   color: var(--ink);
 }
 .shops-search input::placeholder {
@@ -3112,6 +3261,35 @@ body {
   height: 1.1rem;
   color: var(--ink-mute);
 }
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+  color: var(--ink-soft);
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+.footer-social a:hover,
+.footer-social a:focus-visible {
+  color: var(--cobalt);
+  border-color: var(--cobalt);
+  background: var(--cobalt-tint);
+  transform: translateY(-1px);
+}
+.footer-social svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
 .footer-col h3,
 .footer-col h4 {
   font-family: var(--font-eyebrow);
@@ -3137,6 +3315,71 @@ body {
 .footer-col a:hover {
   color: var(--ink);
 }
+.footer-partners {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+.footer-partner-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+.footer-partner-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  min-height: 7.5rem;
+  padding: 1.15rem 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: #0f172a;
+  text-align: center;
+  transition: border-color 160ms ease, transform 160ms ease, background-color 160ms ease;
+}
+.footer-partner-card span {
+  font-family: var(--font-eyebrow);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+.footer-partner-card img {
+  width: auto;
+  max-width: 100%;
+  height: 2.6rem;
+  object-fit: contain;
+}
+.footer-partner-card:hover,
+.footer-partner-card:focus-visible {
+  border-color: rgba(0, 104, 249, 0.55);
+  background: #152036;
+  transform: translateY(-1px);
+}
+.footer-partner-card:hover span,
+.footer-partner-card:focus-visible span {
+  color: #fff;
+}
+.footer-payments {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem 1.1rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: #0f172a;
+}
+.footer-payments img {
+  width: 2.35rem;
+  height: 2.35rem;
+  object-fit: contain;
+}
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
@@ -3150,11 +3393,21 @@ body {
   font-size: 0.8125rem;
 }
 .footer-legal {
-  max-width: 46rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 56rem;
   margin-top: 1.5rem;
   color: var(--ink-mute);
   font-size: 0.75rem;
-  line-height: 1.5;
+  line-height: 1.55;
+}
+.footer-legal p {
+  margin: 0;
+}
+.footer-legal strong {
+  color: var(--ink-soft);
+  font-weight: 600;
 }
 
 /* =========================================================================
@@ -3191,7 +3444,14 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
   .footer-grid {
-    grid-template-columns: 1.6fr 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    align-items: start;
+  }
+  .footer-partners {
+    grid-column: 1 / -1;
+  }
+  .footer-partner-cards {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -3221,12 +3481,29 @@ body {
   }
 }
 
+@media (min-width: 1100px) {
+  .footer-grid {
+    grid-template-columns: 1.45fr 0.8fr 0.8fr 1.4fr;
+  }
+  .footer-partners {
+    grid-column: auto;
+  }
+}
+
 @media (max-width: 899px) {
+  .nav-shell {
+    width: min(100% - 2rem, 1120px);
+  }
+
+  .nav-shell .brand-wordmark {
+    display: none;
+  }
+
   .nav-links {
     position: absolute;
-    left: 1rem;
-    right: 1rem;
-    top: 80px;
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.5rem);
     flex-direction: column;
     align-items: stretch;
     gap: 0.25rem;
@@ -3236,24 +3513,32 @@ body {
     background: var(--surface);
     box-shadow: var(--shadow-subtle), var(--shadow-lift);
     opacity: 0;
+    visibility: hidden;
     transform: translateY(-8px);
     pointer-events: none;
-    transition: opacity 180ms ease, transform 180ms ease;
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
   }
   .nav-links.open {
     opacity: 1;
+    visibility: visible;
     transform: none;
     pointer-events: auto;
   }
   .nav-link {
+    min-height: 44px;
     padding: 0.75rem 0.85rem;
     font-size: 1rem;
   }
   .menu-button {
     display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
   }
   .nav-actions .btn-contact {
     display: none;
+  }
+  .nav-actions .btn-primary {
+    min-height: 44px;
   }
 }
 
@@ -3322,6 +3607,7 @@ body {
   padding-top: 1.25rem;
   border-top: 1px solid var(--ink);
   text-align: center;
+  overflow: visible;
 }
 
 /* These centered introductions stand on their own, without divider rules. */
@@ -3330,9 +3616,10 @@ body {
 #locations > .container > .section-head {
   border-top: 0;
   border-bottom: 0;
-  padding-top: 0;
+  padding-top: 0.35rem;
   text-align: center;
   align-items: center;
+  overflow: visible;
 }
 /* Centre the locations intro (eyebrow + supporting copy). */
 #locations .section-head .eyebrow,
@@ -3350,8 +3637,11 @@ body {
   margin-top: 0;
   font-size: clamp(2rem, calc(5vw - 0.5rem), 4.1rem);
   line-height: 0.98;
-  letter-spacing: -0.04em;
-  white-space: nowrap;
+  letter-spacing: -0.055em;
+  white-space: normal;
+  overflow: visible;
+  padding-block: 0;
+  text-wrap: balance;
 }
 
 /* Keep the primary section titles on one consistent responsive type scale. */
@@ -3361,11 +3651,32 @@ body {
 #plans .section-head h2,
 #faq .section-head h2 {
   font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  overflow: visible;
+  padding-block: 0;
+}
+
+#faq .section-head {
+  width: 100%;
+  text-align: center;
+  overflow: visible;
+  padding-top: 0.35rem;
+}
+#faq .section-head h2 {
+  margin-inline: auto;
+  text-align: center;
+  white-space: normal;
+  max-width: 30ch;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  padding-block: 0;
+  overflow: visible;
 }
 .section-head p {
   max-width: none;
   font-size: clamp(0.9rem, 1.4vw, 1.0625rem);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .steps {
@@ -3411,7 +3722,8 @@ body {
   max-width: 18ch;
   margin-inline: auto;
   font-size: clamp(2.5rem, calc(7vw - 0.5rem), 5.75rem);
-  letter-spacing: -0.05em;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
 }
 
 .bento {
@@ -3559,6 +3871,7 @@ body {
   border-left: 0;
 }
 #how .step .step-illo { transform: none; }
+#how .step .step-illo img { transform: none; }
 
 /* Coverage proof list: one full-width row system with a shared text axis. */
 #coverage > .container {
@@ -3774,7 +4087,7 @@ body {
 
 /* Circular testimonial carousel, adapted to the site's vanilla Vite stack. */
 .legacy-testimonials { display: none; }
-.circular-testimonials-section { overflow: hidden; }
+.circular-testimonials-section { overflow: visible; }
 .circular-testimonials {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -3813,18 +4126,20 @@ body {
 .circular-testimonial-card.is-active { z-index: 3; transform: translateX(0) translateY(0) scale(1) rotateY(0deg); }
 .circular-testimonial-card.is-previous { z-index: 2; transform: translateX(-34%) translateY(-1.5rem) scale(.78) rotateY(12deg); }
 .circular-testimonial-card.is-next { z-index: 2; transform: translateX(34%) translateY(-1.5rem) scale(.78) rotateY(-12deg); }
-.circular-testimonial-initials { color: var(--cobalt-deep); font: 500 4rem/1 var(--font-display); }
+.circular-testimonial-initials { color: var(--cobalt-deep); font: 600 4rem/1 var(--font-display); }
 .circular-testimonials__content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  height: 100%;
-  min-height: 100%;
+  height: auto;
+  min-height: 0;
+  gap: 0;
 }
-.circular-testimonials__content .stars { color: var(--charge-deep); letter-spacing: .12em; font-size: .9rem; }
+.circular-testimonials__content .stars { color: var(--charge); letter-spacing: .12em; font-size: .9rem; }
 .circular-testimonials__quote {
   max-width: 34rem;
-  margin-top: 1rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
   color: var(--ink);
   font: 400 clamp(1.35rem, 2.4vw, 2rem)/1.35 var(--font-display);
   letter-spacing: -.02em;
@@ -3833,12 +4148,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: .15rem;
-  margin-top: auto;
-  padding-top: 1.5rem;
+  margin-top: 1rem;
+  padding-top: 0;
 }
-.circular-testimonials__who strong { font: 500 1rem var(--font-display); }
+.circular-testimonials__who strong { font: 600 1rem var(--font-display); }
 .circular-testimonials__who span { color: var(--ink-mute); font-size: .875rem; }
-.circular-testimonials__controls { display: flex; gap: .75rem; margin-top: 2rem; }
+.circular-testimonials__controls { display: flex; gap: .75rem; margin-top: 1rem; }
 .circular-testimonials__arrow { width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%; background: var(--ink); color: #fff; font-size: 1.25rem; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
 .circular-testimonials__arrow:hover, .circular-testimonials__arrow:focus-visible { background: var(--cobalt); transform: translateY(-2px); }
 .circular-testimonials-section .section-head {
@@ -3855,11 +4170,19 @@ body {
   .circular-testimonials { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 @media (max-width: 639px) {
-  .circular-testimonials__visual { min-height: 18rem; }
-  /* Keep arrows planted when quote length changes in the stacked layout. */
-  .circular-testimonials__content { min-height: 22rem; }
-  .circular-testimonial-card.is-previous { transform: translateX(-26%) translateY(-1rem) scale(.7) rotateY(10deg); }
-  .circular-testimonial-card.is-next { transform: translateX(26%) translateY(-1rem) scale(.7) rotateY(-10deg); }
+  .circular-testimonials__visual {
+    min-height: 14rem;
+  }
+  .circular-testimonials__content {
+    min-height: 0;
+  }
+  .circular-testimonial-card.is-previous,
+  .circular-testimonial-card.is-next {
+    display: none;
+  }
+  .circular-testimonial-card.is-active {
+    transform: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .circular-testimonial-card { transition: none; }
@@ -3947,7 +4270,7 @@ html.has-quote-sheet {
   color: var(--ink);
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 5vw, 2.25rem);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -4163,6 +4486,7 @@ html.has-quote-sheet {
 
 .quote-sheet .qf-plan-tab {
   min-height: 44px;
+  padding-inline: 1.05rem;
   border-radius: 6px;
   font-family: var(--font-text);
   font-weight: 450;
@@ -4185,11 +4509,13 @@ html.has-quote-sheet {
   .quote-sheet {
     width: 100%;
     max-height: 94svh;
+    margin: auto 0 0;
+    border-radius: 24px 24px 0 0;
   }
 
   .quote-sheet__panel {
     max-height: 94svh;
-    padding: 1.25rem;
+    padding: 1.25rem 1.25rem max(1.25rem, env(safe-area-inset-bottom));
   }
 
   .quote-sheet__vehicle-grid {
@@ -4206,4 +4532,159 @@ html.has-quote-sheet {
   .quote-sheet {
     transform: none;
   }
+}
+
+/* =========================================================================
+   Responsive + accessibility hardening
+   ========================================================================= */
+@media (max-width: 899px) {
+  .hero-editorial__inner {
+    width: min(100% - 2rem, 1120px);
+  }
+
+  .road-band {
+    min-height: clamp(20rem, 88vw, 28rem);
+  }
+
+  .road-band h2 {
+    font-size: clamp(1.85rem, 9vw, 2.75rem);
+  }
+
+  .road-band-content {
+    padding-inline: 0.25rem;
+  }
+
+  .plans {
+    gap: 1.25rem;
+  }
+
+  .plan {
+    padding: 1.5rem;
+  }
+
+  .cta .hero-actions {
+    flex-wrap: wrap;
+  }
+
+  .footer-grid {
+    gap: 2rem;
+  }
+
+  .footer-contact a,
+  .footer-social a {
+    min-height: 44px;
+  }
+
+  .footer-partner-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 479px) {
+  #coverage .bento-card,
+  #coverage .bento-feature,
+  #coverage .bento-wide {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding-inline: 0;
+  }
+
+  #coverage .bento-card > figure,
+  #coverage .bento-compare,
+  #coverage .bento-copy,
+  #coverage .bento-wide-copy {
+    grid-column: 1;
+  }
+
+  #coverage .bento-card > figure,
+  #coverage .bento-compare {
+    grid-row: 1;
+    justify-self: start;
+    width: 4.5rem;
+    padding: 0;
+  }
+
+  #coverage .bento-card > figure img,
+  #coverage .bento-compare img {
+    max-width: 4.5rem;
+    max-height: 4.5rem;
+  }
+
+  #coverage .bento-copy,
+  #coverage .bento-wide-copy {
+    grid-row: 2;
+  }
+
+  .plans .btn,
+  .cta .hero-actions,
+  .cta .btn {
+    width: 100%;
+  }
+
+  .cta .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero.hero--editorial h1 {
+    font-size: clamp(2.15rem, 10.5vw, 2.85rem);
+  }
+
+  .vehicle-ticker h2,
+  #how .section-head h2,
+  #coverage .section-head h2,
+  #plans .section-head h2,
+  #locations .section-head h2,
+  #faq .section-head h2 {
+    max-width: 24ch;
+    margin-inline: auto;
+  }
+
+  .circular-testimonials__quote {
+    font-size: clamp(1.2rem, 5.5vw, 1.5rem);
+  }
+
+  .faq-q {
+    font-size: 1.05rem;
+    padding-block: 1.15rem;
+  }
+}
+
+.faq-q {
+  min-height: 44px;
+}
+
+.shop-card {
+  min-height: 44px;
+}
+
+@media (forced-colors: active) {
+  .title-accent,
+  .hero h1 .lead-light,
+  .road-band .title-accent,
+  .title-accent-dot {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: unset !important;
+    color: LinkText !important;
+  }
+
+  .btn-primary,
+  .btn-contact {
+    border: 1px solid ButtonText;
+  }
+}
+
+.menu-button:focus-visible,
+.nav-link:focus-visible,
+.btn:focus-visible,
+.faq-q:focus-visible,
+.shop-card:focus-visible,
+.circular-testimonials__arrow:focus-visible,
+.qf-plan-tab:focus-visible,
+.road-band-link:focus-visible,
+.quote-sheet__close:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
 }

@@ -114,41 +114,39 @@ text AA-large minimum. `--charge` on ice blue fails for text — use `--charge-d
 
 ## 4. Typography
 
-**Families:** Geist with Geist Mono as a focused accent face:
-- **Geist** — titles, headlines, stats, buttons, navigation, body copy, labels,
-  captions, form fields, and supporting UI text. Use Semibold 600 for primary
-  headings, Bold 700 for high-impact display moments, Regular 400 for body, and
-  600 for compact labels.
-- **Geist Mono** — eyebrows and section kickers only. Installed web weight:
-  Semibold 600.
+**Families:** General Sans for titles and body, Geist Mono for kickers:
+- **General Sans** — hero and section headlines, card titles, stats, buttons,
+  navigation, body copy, labels, captions, form fields, and supporting UI text.
+  Use Medium 500 / Semibold 600 for headings, Regular 400 for body.
+- **Geist Mono** — eyebrows and section kickers only.
 
 CSS stacks:
 ```css
---font-display: "Geist", Inter, -apple-system, system-ui, sans-serif;
---font-text: "Geist", Inter, -apple-system, system-ui, sans-serif;
+--font-display: "General Sans", Inter, -apple-system, system-ui, sans-serif;
+--font-text: "General Sans", Inter, -apple-system, system-ui, sans-serif;
 --font-eyebrow: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 ```
 
-The implementation bundles Geist as a local variable web font under
+The implementation bundles General Sans (400–700) as local web fonts under
 `src/assets/`, so the pairing is stable in production.
 
 **Ramp (desktop / mobile):**
 | Token | Family | Size | Line height | Weight | Tracking | Use |
 |---|---|---|---|---|---|---|
-| `display-xl` | Geist | 64 / 40 | 1.04 | 600 | -0.02em | Hero headline only |
-| `display` | Geist | 48 / 32 | 1.08 | 600 | -0.015em | Section headlines |
-| `title` | Geist | 32 / 26 | 1.15 | 600 | -0.01em | Card/bento headlines |
-| `heading` | Geist | 24 / 20 | 1.25 | 600 | -0.005em | Sub-sections |
-| `body-lg` | Geist | 18 | 1.55 | 400 | 0 | Hero copy, intros |
-| `body` | Geist | 16 | 1.6 | 400 | 0 | Default text |
-| `label` | Geist | 14 | 1.4 | 400/600 | +0.01em | UI labels, captions |
-| `eyebrow` | Geist Mono | 13 | 1.2 | 600 | +0.08em, uppercase | Kickers |
-| `stat` | Display | 56 / 40 | 1.0 | 600 | -0.025em | Big numbers ($250, 8yr) — tabular-nums |
+| `display-xl` | General Sans | 64 / 40 | 1.04 | 600 | -0.02em | Hero headline only |
+| `display` | General Sans | 48 / 32 | 1.08 | 600 | -0.015em | Section headlines |
+| `title` | General Sans | 32 / 26 | 1.15 | 600 | -0.01em | Card/bento headlines |
+| `heading` | General Sans | 24 / 20 | 1.25 | 600 | -0.005em | Sub-sections |
+| `body-lg` | General Sans | 18 | 1.55 | 400 | 0 | Hero copy, intros |
+| `body` | General Sans | 16 | 1.6 | 400 | 0 | Default text |
+| `label` | General Sans | 14 | 1.4 | 400/500 | +0.01em | UI labels, captions |
+| `eyebrow` | Geist Mono | 13 | 1.2 | 500 | +0.08em, uppercase | Kickers |
+| `stat` | General Sans | 56 / 40 | 1.0 | 600 | -0.025em | Big numbers ($250, 8yr) — tabular-nums |
 
 Rules: headlines in sentence case; max 12 words in the hero; numbers always
 `font-variant-numeric: tabular-nums` in cards and stats; never letter-space
-lowercase body text. Geist carries both display hierarchy and readable body
-copy — keep weight and size doing the differentiation, not a second sans.
+lowercase body text. General Sans carries both display hierarchy and body copy —
+keep weight and size doing the differentiation.
 
 Geist Mono is reserved for eyebrows and kickers. Keep it uppercase and
 short; do not extend it to body copy, buttons, navigation, or long labels.
@@ -197,7 +195,7 @@ invisible; charge moments are slow and noticed.
 - Real-thing photography allowed: actual cars, actual roads, cool daylight.
   Treat with a subtle cool grade so it sits on the ice-blue canvas.
 - **Icons: Lucide (lucide.dev), exclusively.** Set `stroke-width: 1.5` (Lucide's
-  default is 2 — too heavy next to Geist), rounded caps/joins as shipped,
+  default is 2 — too heavy next to General Sans), rounded caps/joins as shipped,
   single color (`--ink`, `--ink-mute`, or `--cobalt`; `--charge-deep` only on
   charge states). Sizes: 16 inline, 20 UI, 24 feature cards. Never mix icon sets;
   no filled or multi-color icons.
@@ -222,7 +220,7 @@ Every 21st.dev import must pass all eight before it merges:
 ## 9. Open decisions
 
 - [x] Positioning — **A+B hybrid confirmed** (calm product + moments of light), 2026-07-11
-- [x] Typeface — **Geist throughout + Geist Mono kickers** (updated 2026-07-30).
+- [x] Typeface — **General Sans throughout + Geist Mono kickers** (updated 2026-07-30).
       Bundled local web assets are now used across the site.
 - [x] Accent — **Charge Green `#0BC98B`** (decided 2026-07-11). Amber retired.
 - [x] Iconography — **Lucide** at stroke-width 1.5 (decided 2026-07-11)

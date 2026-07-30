@@ -80,6 +80,10 @@ if (shopsGrid) {
     card.target = "_blank";
     card.rel = "noopener noreferrer";
     card.dataset.tokens = tokens;
+    card.setAttribute(
+      "aria-label",
+      `${label}. ${shop.address}. Opens in Google Maps in a new tab.`
+    );
     card.innerHTML =
       `<span class="shop-city">${label}</span>` +
       `<span class="shop-meta">${shop.address}${arrow}</span>`;
@@ -126,7 +130,7 @@ if (circularTestimonials) {
       card.classList.toggle("is-active", offset === 0);
       card.classList.toggle("is-previous", offset === cards.length - 1);
       card.classList.toggle("is-next", offset === 1);
-      card.setAttribute("aria-hidden", offset > 1 ? "true" : "false");
+      card.setAttribute("aria-hidden", offset === 0 ? "false" : "true");
     });
     const active = cards[activeIndex];
     quote.textContent = `“${active.dataset.quote}”`;
@@ -141,6 +145,10 @@ if (circularTestimonials) {
   next?.addEventListener("click", () => { renderTestimonial(activeIndex + 1); restart(); });
   circularTestimonials.addEventListener("mouseenter", () => window.clearInterval(timer));
   circularTestimonials.addEventListener("mouseleave", restart);
+  circularTestimonials.addEventListener("focusin", () => window.clearInterval(timer));
+  circularTestimonials.addEventListener("focusout", (event) => {
+    if (!circularTestimonials.contains(event.relatedTarget)) restart();
+  });
   renderTestimonial(0);
   restart();
 }
@@ -193,17 +201,69 @@ const menuButton = document.querySelector("[data-menu-button]");
 const navLinks = document.querySelector("[data-nav-links]");
 
 if (menuButton && navLinks) {
-  const setOpen = (open) => {
+  const navAnchors = [...navLinks.querySelectorAll("a")];
+  const mobileNavQuery = window.matchMedia("(max-width: 899px)");
+  const isMobileNav = () => mobileNavQuery.matches;
+
+  const unlockDesktopNav = () => {
+    navLinks.classList.remove("open");
+    navLinks.inert = false;
+    navLinks.removeAttribute("aria-hidden");
+    navAnchors.forEach((link) => link.removeAttribute("tabindex"));
+    menuButton.setAttribute("aria-expanded", "false");
+    menuButton.setAttribute("aria-label", "Open menu");
+  };
+
+  const setOpen = (open, { restoreFocus = true } = {}) => {
+    if (!isMobileNav()) {
+      unlockDesktopNav();
+      return;
+    }
     menuButton.setAttribute("aria-expanded", String(open));
     menuButton.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     navLinks.classList.toggle("open", open);
+    if ("inert" in navLinks) {
+      navLinks.inert = !open;
+    } else {
+      navLinks.setAttribute("aria-hidden", String(!open));
+      navAnchors.forEach((link) => {
+        if (open) link.removeAttribute("tabindex");
+        else link.setAttribute("tabindex", "-1");
+      });
+    }
+    if (!restoreFocus) return;
+    if (open) navAnchors[0]?.focus();
+    else menuButton.focus();
   };
+
+  // Mobile starts closed; desktop stays interactive
+  setOpen(false, { restoreFocus: false });
+
   menuButton.addEventListener("click", () => {
-    setOpen(menuButton.getAttribute("aria-expanded") !== "true");
+    const willOpen = menuButton.getAttribute("aria-expanded") !== "true";
+    setOpen(willOpen);
   });
-  navLinks.querySelectorAll("a").forEach((link) =>
+  navAnchors.forEach((link) =>
     link.addEventListener("click", () => setOpen(false))
   );
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    if (menuButton.getAttribute("aria-expanded") !== "true") return;
+    setOpen(false);
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (menuButton.getAttribute("aria-expanded") !== "true") return;
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (navLinks.contains(target) || menuButton.contains(target)) return;
+    setOpen(false, { restoreFocus: false });
+  });
+  const syncNavMode = () => setOpen(false, { restoreFocus: false });
+  if (typeof mobileNavQuery.addEventListener === "function") {
+    mobileNavQuery.addEventListener("change", syncNavMode);
+  } else {
+    mobileNavQuery.addListener(syncNavMode);
+  }
 }
 
 /* ---- Sticky header state ------------------------------------------------- */
@@ -646,7 +706,7 @@ if (quoteForm) {
       planTabs.forEach((t) => {
         const active = t === tab;
         t.classList.toggle("is-active", active);
-        t.setAttribute("aria-selected", String(active));
+        t.setAttribute("aria-checked", String(active));
       });
       paintPrice();
       srLive.textContent =
@@ -775,35 +835,50 @@ if (quoteSheet && quoteOpeners.length) {
 /* ---- FAQ accordion ------------------------------------------------------- */
 const faq = document.querySelector("[data-faq]");
 if (faq) {
-  const items = faq.querySelectorAll(".faq-item");
-  items.forEach((item) => {
+  const items = [...faq.querySelectorAll(".faq-item")];
+  items.forEach((item, index) => {
     const btn = item.querySelector(".faq-q");
     const panel = item.querySelector(".faq-a");
+    if (!btn || !panel) return;
+    const panelId = panel.id || `faq-panel-${index + 1}`;
+    panel.id = panelId;
+    panel.setAttribute("role", "region");
+    btn.setAttribute("aria-controls", panelId);
+    if (!btn.id) btn.id = `faq-trigger-${index + 1}`;
+    panel.setAttribute("aria-labelledby", btn.id);
+    panel.hidden = !item.classList.contains("open");
+
     btn.addEventListener("click", () => {
       const isOpen = item.classList.contains("open");
-      // close others for a clean single-open accordion
       items.forEach((other) => {
         if (other === item) return;
+        const otherBtn = other.querySelector(".faq-q");
+        const otherPanel = other.querySelector(".faq-a");
         other.classList.remove("open");
-        other.querySelector(".faq-q").setAttribute("aria-expanded", "false");
-        other.querySelector(".faq-a").style.height = "0px";
+        otherBtn?.setAttribute("aria-expanded", "false");
+        if (otherPanel) {
+          otherPanel.hidden = true;
+          otherPanel.style.height = "0px";
+        }
       });
       if (isOpen) {
         item.classList.remove("open");
         btn.setAttribute("aria-expanded", "false");
+        panel.hidden = true;
         panel.style.height = "0px";
       } else {
         item.classList.add("open");
         btn.setAttribute("aria-expanded", "true");
+        panel.hidden = false;
         panel.style.height = panel.firstElementChild.offsetHeight + "px";
       }
     });
   });
-  // keep an open panel correctly sized on resize
   window.addEventListener("resize", () => {
     const open = faq.querySelector(".faq-item.open");
-    if (open) {
-      const panel = open.querySelector(".faq-a");
+    if (!open) return;
+    const panel = open.querySelector(".faq-a");
+    if (panel?.firstElementChild) {
       panel.style.height = panel.firstElementChild.offsetHeight + "px";
     }
   });

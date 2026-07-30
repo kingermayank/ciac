@@ -17,6 +17,20 @@
     <meta name="twitter:description" content="Lifetime battery protection for your EV or hybrid. One flat price, one $250 deductible, activated in a click." />
     <meta name="twitter:image" content="/src/assets/optimized/hero-backdrop-a1.webp" />
     <link rel="icon" href="/src/assets/logo.png" type="image/png" />
+    <link
+      rel="preload"
+      href="/src/assets/general-sans-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/src/assets/general-sans-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <title>Coverage in a Click | Lifetime EV &amp; hybrid battery protection</title>
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
@@ -43,7 +57,7 @@
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
           </a>
           <a class="btn btn-primary" href="#quote" data-quote-open>
-            Get my quote
+            Get coverage
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
           </a>
           <button
@@ -65,7 +79,7 @@
       <section class="hero hero--editorial" id="quote" aria-labelledby="hero-title">
         <div class="container hero-editorial__inner reveal">
           <div class="hero-editorial__copy">
-            <h1 id="hero-title">One click between you and <span class="title-accent">battery protection</span>.</h1>
+            <h1 id="hero-title">One click between you and <span class="title-accent">battery protection</span><span class="title-accent-dot">.</span></h1>
             <p class="hero-sub">
               Lifetime battery protection for your EV or hybrid. One flat price,
               one $250 deductible, activated in a click. We cover the cars other
@@ -157,10 +171,10 @@
       </section>
 
       <!-- ===================== How it works ===================== -->
-      <section class="section" id="how">
+      <section class="section" id="how" aria-labelledby="how-title">
         <div class="container">
           <div class="section-head reveal">
-            <h2>From quote to covered in <span class="title-accent">four steps</span>.</h2>
+            <h2 id="how-title">From quote to covered in <span class="title-accent">four steps</span>.</h2>
             <p>
               No dealership visit. No paperwork maze. Tell us about your car,
               check the battery if needed, and pick how you pay.
@@ -222,10 +236,10 @@
       </section>
 
       <!-- ===================== Coverage / bento ===================== -->
-      <section class="section" id="coverage">
+      <section class="section" id="coverage" aria-labelledby="coverage-title">
         <div class="container">
           <div class="section-head reveal">
-            <h2>Protection that starts where your <span class="title-accent">warranty stops</span>.</h2>
+            <h2 id="coverage-title">Protection that starts where your <span class="title-accent">warranty stops</span>.</h2>
             <p>
               A battery pack can cost $10,000 to replace. Here's what you get
               after the factory coverage ends.
@@ -309,10 +323,10 @@
       </section>
 
       <!-- ===================== Plans ===================== -->
-      <section class="section" id="plans">
+      <section class="section" id="plans" aria-labelledby="plans-title">
         <div class="container">
           <div class="section-head center reveal">
-            <h2>Lifetime coverage. <span class="title-accent">Pay monthly or once</span>.</h2>
+            <h2 id="plans-title">Lifetime coverage. <span class="title-accent">Pay monthly or once</span>.</h2>
             <p>Same protection. Same $250 deductible. Pick the payment that fits your budget.</p>
           </div>
           <div class="plans reveal">
@@ -327,7 +341,7 @@
                 <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Spread the cost at 0% interest</li>
               </ul>
               <a class="btn btn-contact btn-block" href="#quote" data-quote-open>
-                Start monthly quote
+                Get coverage
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
               </a>
             </article>
@@ -344,7 +358,7 @@
                 <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Transfers if you sell the car</li>
               </ul>
               <a class="btn btn-primary btn-block" href="#quote" data-quote-open>
-                Get my quote
+                Get coverage
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
               </a>
             </article>
@@ -378,7 +392,7 @@
             </div>
             <div class="circular-testimonials__content">
               <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
-              <p class="circular-testimonials__quote" data-testimonial-quote></p>
+              <p class="circular-testimonials__quote" data-testimonial-quote aria-live="polite"></p>
               <div class="circular-testimonials__who">
                 <strong data-testimonial-name></strong>
                 <span data-testimonial-vehicle></span>
@@ -392,7 +406,7 @@
         </div>
       </section>
 
-      <section class="section legacy-testimonials" aria-hidden="true">
+      <section class="section legacy-testimonials" aria-hidden="true" inert>
         <div class="container">
           <div class="section-head center reveal">
             <h2>Drivers who bought before the <span class="title-accent">warranty cliff</span>.</h2>
@@ -598,11 +612,11 @@
       </section>
 
       <!-- ===================== Partner shops ===================== -->
-      <section class="section" id="locations">
+      <section class="section" id="locations" aria-labelledby="locations-title">
         <div class="container">
           <div class="section-head center reveal">
             <span class="eyebrow">When you need a repair</span>
-            <h2>35 shops ready <span class="title-accent">near you</span>.</h2>
+            <h2 id="locations-title">35 shops ready <span class="title-accent">near you</span>.</h2>
             <p>
               Battery4Life covers work at licensed GreenTec Auto shops across the
               U.S. and Canada. Find the closest one before you need it.
@@ -632,10 +646,10 @@
       </section>
 
       <!-- ===================== FAQ ===================== -->
-      <section class="section" id="faq">
+      <section class="section" id="faq" aria-labelledby="faq-title">
         <div class="container">
           <div class="section-head center reveal">
-            <h2>Questions owners ask before they <span class="title-accent">buy</span>.</h2>
+            <h2 id="faq-title">Questions owners ask before they <span class="title-accent">buy</span>.</h2>
           </div>
           <div class="faq reveal" data-faq>
             <div class="faq-item">
@@ -740,7 +754,7 @@
       </section>
 
       <!-- ===================== Closing CTA ===================== -->
-      <section class="section">
+      <section class="section" aria-labelledby="cta-title">
         <div class="container">
           <div class="cta reveal">
             <div class="cta-media" aria-hidden="true">
@@ -766,7 +780,7 @@
                 <source src="/src/assets/optimized/video/cta-chargeport-e1.mp4" type="video/mp4" />
               </video>
             </div>
-            <h2>Don't wait for the warranty to <span class="title-accent">run out</span>.</h2>
+            <h2 id="cta-title">Don't wait for the warranty to <span class="title-accent">run out</span>.</h2>
             <p>
               Check your car in about a minute. Many drivers qualify on the spot —
               and can be covered before they leave this page.
@@ -777,7 +791,7 @@
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
               </a>
               <a class="btn btn-primary" href="#quote" data-quote-open>
-                Get my quote
+                Get coverage
                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
               </a>
             </div>
@@ -809,6 +823,45 @@
                 help@coverageinaclick.com
               </a>
             </div>
+            <div class="footer-social" aria-label="Social media">
+              <a
+                href="https://www.instagram.com/betterwarranty/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow Coverage in a Click on Instagram"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" />
+                  <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0-6 0" />
+                  <path d="M16.5 7.5v.01" />
+                </svg>
+              </a>
+              <a
+                href="https://www.linkedin.com/company/coverageinaclick/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow Coverage in a Click on LinkedIn"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M8 11v5" />
+                  <path d="M8 8v.01" />
+                  <path d="M12 16v-5" />
+                  <path d="M16 16v-3a2 2 0 1 0-4 0" />
+                  <path d="M3 7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z" />
+                </svg>
+              </a>
+              <a
+                href="https://www.youtube.com/@BetterWarranty"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow Coverage in a Click on YouTube"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 8a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" />
+                  <path d="M10 9l5 3l-5 3z" />
+                </svg>
+              </a>
+            </div>
           </div>
           <div class="footer-col">
             <h3>Product</h3>
@@ -823,23 +876,68 @@
           <div class="footer-col">
             <h3>Company</h3>
             <ul>
-              <li><a href="#">About</a></li>
-              <li><a href="#">Contact</a></li>
-              <li><a href="#">Privacy</a></li>
-              <li><a href="#">Terms</a></li>
+              <li><a href="mailto:help@coverageinaclick.com">Contact</a></li>
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="mailto:help@coverageinaclick.com?subject=Privacy%20inquiry">Privacy</a></li>
+              <li><a href="mailto:help@coverageinaclick.com?subject=Terms%20inquiry">Terms</a></li>
             </ul>
+          </div>
+          <div class="footer-partners">
+            <div class="footer-partner-cards">
+              <a
+                class="footer-partner-card"
+                href="https://www.budcopayplan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Financial Partner</span>
+                <img src="/assets/footer/budco.png" alt="Budco Financial" width="128" height="55" loading="lazy" />
+              </a>
+              <a
+                class="footer-partner-card"
+                href="https://www.oldrepublic.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Backed by</span>
+                <img src="/assets/footer/old-republic.png" alt="Old Republic National Title Insurance Company" width="144" height="53" loading="lazy" />
+              </a>
+            </div>
+            <div class="footer-payments" aria-label="Accepted payment methods">
+              <img src="/assets/footer/visa.png" alt="Visa" width="40" height="40" loading="lazy" />
+              <img src="/assets/footer/mastercard.png" alt="Mastercard" width="40" height="40" loading="lazy" />
+              <img src="/assets/footer/amex.png" alt="American Express" width="40" height="40" loading="lazy" />
+              <img src="/assets/footer/maestro.png" alt="Maestro" width="40" height="40" loading="lazy" />
+            </div>
           </div>
         </div>
         <div class="footer-bottom">
-          <span>© 2026 Coverage in a Click. All rights reserved.</span>
+          <span>© 2026 Intuitive Contracts, LLC d/b/a Coverage in a Click (“CIAC”)</span>
           <span>Made for drivers staring down the warranty cliff.</span>
         </div>
-        <p class="footer-legal">
-          Coverage in a Click offers Vehicle Service Contracts (Mechanical Breakdown
-          Insurance in California), not traditional insurance policies. Contracts are
-          administered by licensed third-party providers and backed by an A+ rated
-          insurer. Coverage terms, eligibility, and availability vary by state.
-        </p>
+        <div class="footer-legal">
+          <p>
+            Coverage in a Click provides vehicle service contracts nationwide through
+            licensed partners. In Florida, coverage is offered through Minnehoma
+            Automobile Association (FL License #60033). In California, mechanical
+            breakdown insurance is both provided and administered by CDS Auto Sales
+            (CA License #09565). In all other states, vehicle service contracts offered
+            by CIAC are administered by Magellan Service Corporation in partnership
+            with licensed providers.
+          </p>
+          <p>
+            <strong>Important:</strong> CIAC is not an insurance company. We do not
+            underwrite insurance policies or pay claims. All coverage is issued and
+            managed by licensed third-party providers.
+          </p>
+          <p>
+            <strong>Legal Notice:</strong> The terms “Warranty” and “Extended Warranty”
+            as used on this site refer to Vehicle Service Contracts (VSCs), or in
+            California, Mechanical Breakdown Insurance. These are not manufacturer
+            warranties. They provide coverage for repairs after your manufacturer's
+            warranty ends. Terms, conditions, and exclusions apply.
+          </p>
+        </div>
       </div>
     </footer>
 
@@ -966,9 +1064,9 @@
             </div>
 
             <div class="qf-quote-standard" data-qf-quote-standard>
-              <div class="qf-plan-toggle" role="tablist" aria-label="Payment schedule">
-                <button class="qf-plan-tab is-active" type="button" role="tab" aria-selected="true" data-qf-plan="monthly">Monthly</button>
-                <button class="qf-plan-tab" type="button" role="tab" aria-selected="false" data-qf-plan="once">Pay once</button>
+              <div class="qf-plan-toggle" role="radiogroup" aria-label="Payment schedule">
+                <button class="qf-plan-tab is-active" type="button" role="radio" aria-checked="true" data-qf-plan="monthly">Monthly</button>
+                <button class="qf-plan-tab" type="button" role="radio" aria-checked="false" data-qf-plan="once">Pay once</button>
               </div>
               <div class="qc-total">
                 <div>
