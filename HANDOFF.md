@@ -142,7 +142,7 @@ headlight, or front door. This rule is also recorded in `VISUALS.md`.
 Two technical line diagrams, deliberately a second visual register from the
 cinematic photography (see VISUALS.md "Illustration system" section for the
 full rationale and style lock). Generated with Higgsfield `recraft_v4_1` in
-`vector` mode with explicit hex colors (`#121722`/`#0068F9`/`#0BC98B`) and a
+`vector` mode with explicit hex colors (`#1C1612`/`#0068F9`/`#0BC98B`) and a
 transparent background — true SVG output, not raster.
 
 - Battery coverage cutaway → FAQ's first answer (the "what's covered"

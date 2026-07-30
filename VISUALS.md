@@ -17,8 +17,8 @@ battery, the road home).
 ### Master style block (prepend to every prompt)
 
 > Cinematic photograph, blue-hour dusk, matte editorial film grade with soft
-> grain, warm paper-cream highlights (#FAF9F7) and deep charcoal-ink shadows
-> (#121722), one restrained emerald-green light accent (#0BC98B) emanating from
+> grain, warm paper-cream highlights (#FAF9F7) and deep espresso-ink shadows
+> (#1C1612), one restrained emerald-green light accent (#0BC98B) emanating from
 > a single meaningful source, faint cool cobalt (#0068F9) reflections, shallow
 > depth of field, minimalist composition, generous negative space, premium car
 > advertising aesthetic —
@@ -181,7 +181,7 @@ array locked to hex tokens (not prompt-described), `background_color: null`
 > no text or numbers rendered in the image (labels are added in HTML/CSS
 > after), no photorealistic rendering, no other colors beyond the palette
 
-**Color lock:** `#121722` (ink — outlines/structure), `#0068F9` (cobalt —
+**Color lock:** `#1C1612` (ink — outlines/structure), `#0068F9` (cobalt —
 informational/structural elements), `#0BC98B` (charge — the ONE covered/
 meaningful element only, per BRAND.md's charge rules). Never more than these
 three in a single diagram.

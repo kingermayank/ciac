@@ -71,19 +71,20 @@ third parties. Never call it "insurance" unqualified in body copy.
 
 ## 3. Color system
 
-Philosophy: a warm paper-like canvas, ink for words, cobalt for action, and one
-reserved "charge" accent that only appears when something good happens.
+Philosophy: a cool ice-blue canvas, cool near-black ink for words, cobalt for
+action, and one reserved "charge" accent that only appears when something good
+happens.
 
 ### Core palette
 | Token | Hex | Role |
 |---|---|---|
-| `--canvas-cream` | `#FAF9F7` | Page background. Never pure white pages. |
-| `--surface-ivory` | `#FBFAF7` | Alternate section background |
+| `--canvas` | `#F1F6FE` | Page background. Never pure white pages. |
+| `--surface-ivory` | `#F7FAFF` | Alternate section background |
 | `--surface-white` | `#FFFFFF` | Cards and elevated surfaces only |
-| `--ink` | `#121722` | Headlines, primary text |
-| `--ink-soft` | `#4A505C` | Body text (raised from #777C86 for contrast) |
-| `--ink-mute` | `#777C86` | Captions, labels — 14px+ only |
-| `--hairline` | `#ECEAE6` | Borders (warmed from #EFEFEF to sit on cream) |
+| `--ink` | `#12161C` | Headlines, primary text — cool near-black |
+| `--ink-soft` | `#4A5563` | Body text |
+| `--ink-mute` | `#6B7380` | Captions, labels — 14px+ only |
+| `--hairline` | `#E2EAF4` | Borders (cooled to sit on ice blue) |
 | `--cobalt` | `#0068F9` | Primary action. Buttons, links, focus rings. |
 | `--cobalt-deep` | `#024BB1` | Hover/active states |
 | `--cobalt-tint` | `#EAF2FE` | Selected states, info surfaces |
@@ -92,7 +93,7 @@ reserved "charge" accent that only appears when something good happens.
 | Token | Hex | Role |
 |---|---|---|
 | `--charge` | `#0BC98B` | Charged green — protected status, quote-ready, success |
-| `--charge-deep` | `#048862` | Text-on-light version (AA on cream) |
+| `--charge-deep` | `#048862` | Text-on-light version (AA on ice blue) |
 | `--charge-glow` | `#7FF2C8` | Glow gradients, beam highlights only |
 
 **Charge rules (strict):**
@@ -107,49 +108,49 @@ reserved "charge" accent that only appears when something good happens.
 Violet's old jobs go to cobalt (emphasis) or charge (positive stats).
 
 Accessibility floor: body text AA (4.5:1) on its actual background; large display
-text AA-large minimum. `--charge` on cream fails for text — use `--charge-deep`.
+text AA-large minimum. `--charge` on ice blue fails for text — use `--charge-deep`.
 
 ---
 
 ## 4. Typography
 
-**Families:** Nuckle and Geist with JetBrains Mono as a focused accent face:
-- **Nuckle** — titles, headlines, stats, buttons, and navigation. Use Semibold
-  600 for primary headings and Bold 700 for high-impact display moments.
-- **Geist** — body copy, labels, captions, form fields, and supporting UI text.
-  Use Regular 400 by default and 600 for compact labels.
-- **JetBrains Mono** — eyebrows and section kickers only. Installed web weight:
+**Families:** Geist with Geist Mono as a focused accent face:
+- **Geist** — titles, headlines, stats, buttons, navigation, body copy, labels,
+  captions, form fields, and supporting UI text. Use Semibold 600 for primary
+  headings, Bold 700 for high-impact display moments, Regular 400 for body, and
+  600 for compact labels.
+- **Geist Mono** — eyebrows and section kickers only. Installed web weight:
   Semibold 600.
 
 CSS stacks:
 ```css
---font-display: "Nuckle", Inter, -apple-system, system-ui, sans-serif;
+--font-display: "Geist", Inter, -apple-system, system-ui, sans-serif;
 --font-text: "Geist", Inter, -apple-system, system-ui, sans-serif;
---font-eyebrow: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+--font-eyebrow: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 ```
 
-The implementation bundles Nuckle Regular/Semibold/Bold and Geist as local web
-assets under `src/assets/`, so the pairing is stable in production.
+The implementation bundles Geist as a local variable web font under
+`src/assets/`, so the pairing is stable in production.
 
 **Ramp (desktop / mobile):**
 | Token | Family | Size | Line height | Weight | Tracking | Use |
 |---|---|---|---|---|---|---|
-| `display-xl` | Nuckle | 64 / 40 | 1.04 | 600 | -0.02em | Hero headline only |
-| `display` | Nuckle | 48 / 32 | 1.08 | 600 | -0.015em | Section headlines |
-| `title` | Nuckle | 32 / 26 | 1.15 | 600 | -0.01em | Card/bento headlines |
-| `heading` | Nuckle | 24 / 20 | 1.25 | 600 | -0.005em | Sub-sections |
+| `display-xl` | Geist | 64 / 40 | 1.04 | 600 | -0.02em | Hero headline only |
+| `display` | Geist | 48 / 32 | 1.08 | 600 | -0.015em | Section headlines |
+| `title` | Geist | 32 / 26 | 1.15 | 600 | -0.01em | Card/bento headlines |
+| `heading` | Geist | 24 / 20 | 1.25 | 600 | -0.005em | Sub-sections |
 | `body-lg` | Geist | 18 | 1.55 | 400 | 0 | Hero copy, intros |
 | `body` | Geist | 16 | 1.6 | 400 | 0 | Default text |
 | `label` | Geist | 14 | 1.4 | 400/600 | +0.01em | UI labels, captions |
-| `eyebrow` | JetBrains Mono | 13 | 1.2 | 600 | +0.08em, uppercase | Kickers |
+| `eyebrow` | Geist Mono | 13 | 1.2 | 600 | +0.08em, uppercase | Kickers |
 | `stat` | Display | 56 / 40 | 1.0 | 600 | -0.025em | Big numbers ($250, 8yr) — tabular-nums |
 
 Rules: headlines in sentence case; max 12 words in the hero; numbers always
 `font-variant-numeric: tabular-nums` in cards and stats; never letter-space
-lowercase body text. Nuckle carries display character; Geist stays neutral and
-readable in longer copy — do not swap these roles.
+lowercase body text. Geist carries both display hierarchy and readable body
+copy — keep weight and size doing the differentiation, not a second sans.
 
-JetBrains Mono is reserved for eyebrows and kickers. Keep it uppercase and
+Geist Mono is reserved for eyebrows and kickers. Keep it uppercase and
 short; do not extend it to body copy, buttons, navigation, or long labels.
 
 ---
@@ -166,7 +167,7 @@ short; do not extend it to body copy, buttons, navigation, or long labels.
   - `shadow-lift`: `rgba(0,0,0,.04) 0 20px 20px -8px`
   - `glow-charge`: `0 0 0 1px rgba(11,201,139,.25), 0 8px 40px -8px rgba(11,201,139,.35)` — charge moments only
 - Borders are hairline (`--hairline`), 1px, never 2px. Depth comes from shadow +
-  surface shifts (cream → ivory → white), not heavy strokes.
+  surface shifts (ice blue → ivory → white), not heavy strokes.
 
 ---
 
@@ -191,12 +192,12 @@ invisible; charge moments are slow and noticed.
 - **UI-as-hero:** the quote workspace card is the product shot. No stock photos
   of handshakes, call centers, or people pointing at laptops. Ever.
 - Generated imagery (Higgsfield, once connected): EVs at dusk with charge-glow
-  accents, macro battery/current abstracts, warm light on dark asphalt.
-  Palette-locked: cream, ink, cobalt, charge-green highlights only.
-- Real-thing photography allowed: actual cars, actual roads, golden-hour light.
-  Treat with a subtle warm grade so it sits on the cream canvas.
+  accents, macro battery/current abstracts, cool light on dark asphalt.
+  Palette-locked: ice blue, ink, cobalt, charge-green highlights only.
+- Real-thing photography allowed: actual cars, actual roads, cool daylight.
+  Treat with a subtle cool grade so it sits on the ice-blue canvas.
 - **Icons: Lucide (lucide.dev), exclusively.** Set `stroke-width: 1.5` (Lucide's
-  default is 2 — too heavy next to Nuckle), rounded caps/joins as shipped,
+  default is 2 — too heavy next to Geist), rounded caps/joins as shipped,
   single color (`--ink`, `--ink-mute`, or `--cobalt`; `--charge-deep` only on
   charge states). Sizes: 16 inline, 20 UI, 24 feature cards. Never mix icon sets;
   no filled or multi-color icons.
@@ -221,8 +222,8 @@ Every 21st.dev import must pass all eight before it merges:
 ## 9. Open decisions
 
 - [x] Positioning — **A+B hybrid confirmed** (calm product + moments of light), 2026-07-11
-- [x] Typeface — **Nuckle titles + Geist body** (decided 2026-07-15). Bundled
-      local web assets are now used across the site.
+- [x] Typeface — **Geist throughout + Geist Mono kickers** (updated 2026-07-30).
+      Bundled local web assets are now used across the site.
 - [x] Accent — **Charge Green `#0BC98B`** (decided 2026-07-11). Amber retired.
 - [x] Iconography — **Lucide** at stroke-width 1.5 (decided 2026-07-11)
 - [ ] Wordmark/logo treatment (current "C" mark is placeholder)

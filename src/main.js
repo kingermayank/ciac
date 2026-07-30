@@ -1,9 +1,111 @@
-import "@fontsource/jetbrains-mono/latin-600.css";
+import "@fontsource/geist-mono/latin-600.css";
 
 /* Coverage in a Click — interactions
    Calm UI, light at the meaningful moments. Progressive enhancement only. */
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---- Partner shops: render the GreenTec Auto network + client-side filter.
+   Addresses sourced from greentecauto.com/locations. */
+const SHOP_STATES = {
+  GA: "georgia", TX: "texas", MA: "massachusetts", NC: "north carolina",
+  IL: "illinois", OH: "ohio", FL: "florida", CO: "colorado", MI: "michigan",
+  KS: "kansas", NV: "nevada", NJ: "new jersey", CA: "california", WI: "wisconsin",
+  MN: "minnesota", TN: "tennessee", OK: "oklahoma", PA: "pennsylvania",
+  AZ: "arizona", OR: "oregon", UT: "utah", WA: "washington", MD: "maryland",
+  BC: "british columbia",
+};
+const SHOPS = [
+  { city: "Atlanta", state: "GA", address: "6594 GA-42, Rex, GA 30273" },
+  { city: "Austin", state: "TX", address: "7696 183A #2B, Leander, TX 78641" },
+  { city: "Bay Area", state: "CA", address: "988 Rufus Ct, Hayward, CA 94541" },
+  { city: "Boston", state: "MA", address: "14 Perry Dr Unit D, Foxborough, MA 02035" },
+  { city: "Bowie", state: "MD", address: "5711 Woodcliff Rd, Unit #102, Bowie, MD 20720" },
+  { city: "Charlotte", state: "NC", address: "5980 Grand National Ln SW, Concord, NC 28027" },
+  { city: "Chicago", state: "IL", address: "71 Sangra Court, Streamwood, IL 60107" },
+  { city: "Cincinnati", state: "OH", address: "4820 Interstate Dr, West Chester Township, OH 45246" },
+  { city: "Cleveland", state: "OH", address: "790 Ken Mar Industrial Pkwy, Broadview Heights, OH 44147" },
+  { city: "Dallas", state: "TX", address: "13659 Jupiter Rd, Suite #205, Dallas, TX 75238" },
+  { city: "Deerfield Beach", state: "FL", address: "3492 SW 15th St, Deerfield Beach, FL 33442" },
+  { city: "Denver", state: "CO", address: "5454 Washington St Unit 4, Denver, CO 80216" },
+  { city: "Detroit", state: "MI", address: "1888 Thunderbird St, Troy, MI 48084" },
+  { city: "Houston", state: "TX", address: "5750 N Sam Houston Parkway East, Suite 112, Houston, TX 77032" },
+  { city: "Jacksonville", state: "FL", address: "7540 103rd St Unit 215/216, Jacksonville, FL 32210" },
+  { city: "Kansas City", state: "KS", address: "2930 S 44th St, Kansas City, KS 66106" },
+  { city: "Las Vegas", state: "NV", address: "1967 Whitney Mesa Dr, Henderson, NV 89014" },
+  { city: "Livingston", state: "NJ", address: "7 Industrial Pkwy Unit 11, Livingston, NJ 07039" },
+  { city: "Los Angeles", state: "CA", address: "464 S Cataract Ave. Unit A, San Dimas, CA 91773" },
+  { city: "Milwaukee", state: "WI", address: "9055 N 51st St B, Brown Deer, WI 53223" },
+  { city: "Minneapolis", state: "MN", address: "407 W 60th Street, Suite 411, Minneapolis, MN 55419" },
+  { city: "Nashville", state: "TN", address: "1109 Darbytown Dr, Nashville, TN 37207" },
+  { city: "Oklahoma City", state: "OK", address: "4201 SW 29th St, Oklahoma City, OK 73108" },
+  { city: "Orange County", state: "CA", address: "6348 Industry Way, Westminster, CA 92683" },
+  { city: "Orlando", state: "FL", address: "207 Reece Way STE 1601, Casselberry, FL 32707" },
+  { city: "Philadelphia", state: "PA", address: "2014 Ford Rd # M, Newportville, PA 19056" },
+  { city: "Phoenix", state: "AZ", address: "2920 E Mohawk Ln STE 110, Phoenix, AZ 85050" },
+  { city: "Portland", state: "OR", address: "8750 NE Emerson St, Portland, OR 97220" },
+  { city: "Sacramento", state: "CA", address: "5437 Stationers Way, Sacramento, CA 95842" },
+  { city: "Salt Lake City", state: "UT", address: "2411 Constitution Blvd Unit D, West Valley City, UT 84119" },
+  { city: "San Antonio", state: "TX", address: "431 Isom Rd Suite 112, San Antonio, TX 78216" },
+  { city: "San Diego", state: "CA", address: "4901 Morena Blvd, Suite 408, San Diego, CA 92117" },
+  { city: "Seattle", state: "WA", address: "1721 W Valley Hwy N, Unit 8, Auburn, WA 98001" },
+  { city: "Tampa", state: "FL", address: "1651 S Missouri Ave, Clearwater, FL 33756" },
+  { city: "Vancouver", state: "BC", address: "1560 Booth Ave, Coquitlam, BC V3K 6V7" },
+];
+
+const shopsGrid = document.querySelector("[data-shops-grid]");
+if (shopsGrid) {
+  const searchInput = document.querySelector("[data-shop-search]");
+  const emptyMsg = document.querySelector("[data-shops-empty]");
+  const countEl = document.querySelector("[data-shops-count]");
+
+  const arrow =
+    '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
+
+  SHOPS.forEach((shop) => {
+    const label = shop.state ? `${shop.city}, ${shop.state}` : shop.city;
+    const query = shop.address || `GreenTec Auto ${label}`;
+    const tokens = [
+      shop.city,
+      shop.state || "",
+      shop.state ? SHOP_STATES[shop.state] || "" : "",
+      shop.address || "",
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const card = document.createElement("a");
+    card.className = "shop-card";
+    card.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+    card.dataset.tokens = tokens;
+    card.innerHTML =
+      `<span class="shop-city">${label}</span>` +
+      `<span class="shop-meta">${shop.address}${arrow}</span>`;
+    shopsGrid.appendChild(card);
+  });
+
+  const cards = [...shopsGrid.querySelectorAll(".shop-card")];
+  const setCount = (n) => {
+    if (countEl) countEl.textContent = n === SHOPS.length ? `${n} shops` : `${n} of ${SHOPS.length}`;
+  };
+  setCount(SHOPS.length);
+
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim().toLowerCase();
+      let shown = 0;
+      cards.forEach((card) => {
+        const match = !q || card.dataset.tokens.includes(q);
+        card.hidden = !match;
+        if (match) shown += 1;
+      });
+      setCount(shown);
+      if (emptyMsg) emptyMsg.hidden = shown !== 0;
+    });
+  }
+}
 
 /* ---- Circular customer testimonials ------------------------------------ */
 const circularTestimonials = document.querySelector("[data-circular-testimonials]");
@@ -518,7 +620,7 @@ if (quoteForm) {
 
   nextBtn.addEventListener("click", () => {
     if (nextBtn.disabled) return;
-    recap.innerHTML = `<strong>${state.year} ${state.make} ${state.model}</strong> · one more question.`;
+    recap.innerHTML = `<strong>${state.year} ${state.make} ${state.model}</strong>`;
     setStep(1, "forward");
     submitBtn.disabled = !(state.miles > 0);
   });
@@ -526,6 +628,7 @@ if (quoteForm) {
 
   /* pricing: placeholder rate table until real data lands */
   const PRICING = { monthly: 39, once: 1290 };
+  const BATTERY4LIFE_URL = "https://www.repairwise.pro/battery4life";
   const isOldVehicle = () => {
     const age = CURRENT_YEAR - Number(state.year || CURRENT_YEAR);
     return age > 6 || state.miles > 75000;
@@ -557,30 +660,23 @@ if (quoteForm) {
   const revealQuote = () => {
     quoteVehicle.textContent = `${state.year} ${state.make} ${state.model}`;
     quoteMileage.textContent = `${formatMiles(state.miles)} mi`;
-
-    if (isOldVehicle()) {
-      quoteHead.textContent = "Health check first";
-      standardBlock.hidden = true;
-      checkBlock.hidden = false;
-      activateLabel.textContent = "Start health check";
-      activateLink.setAttribute("href", "#how");
-      srLive.textContent =
-        "Your vehicle qualifies for a free RepairWise battery health report first.";
-    } else {
-      quoteHead.textContent = "Quote ready";
-      standardBlock.hidden = false;
-      checkBlock.hidden = true;
-      activateLabel.textContent = "Activate coverage";
-      activateLink.setAttribute("href", "#plans");
-      selectedPlan = "monthly";
-      planTabs.forEach((t) => {
-        const active = t.dataset.qfPlan === "monthly";
-        t.classList.toggle("is-active", active);
-        t.setAttribute("aria-selected", String(active));
-      });
-      paintPrice();
-      srLive.textContent = `Quote ready. ${state.year} ${state.make} ${state.model}. Monthly plan, $${PRICING.monthly} per month.`;
-    }
+    quoteHead.textContent = "Quote ready";
+    standardBlock.hidden = false;
+    checkBlock.hidden = !isOldVehicle();
+    activateLabel.textContent = "Continue to Battery4Life";
+    activateLink.setAttribute("href", BATTERY4LIFE_URL);
+    activateLink.setAttribute("target", "_blank");
+    activateLink.setAttribute("rel", "noopener noreferrer");
+    selectedPlan = "monthly";
+    planTabs.forEach((t) => {
+      const active = t.dataset.qfPlan === "monthly";
+      t.classList.toggle("is-active", active);
+      t.setAttribute("aria-selected", String(active));
+    });
+    paintPrice();
+    srLive.textContent = isOldVehicle()
+      ? `Rough estimate ready. ${state.year} ${state.make} ${state.model}. About $${PRICING.monthly} per month. A free battery health report may be required before activation.`
+      : `Rough estimate ready. ${state.year} ${state.make} ${state.model}. About $${PRICING.monthly} per month.`;
 
     setStep(2, "forward");
     // fire the beam once, on the actual meaningful moment
