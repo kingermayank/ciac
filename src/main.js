@@ -274,6 +274,43 @@ if (header) {
   window.addEventListener("scroll", onScroll, { passive: true });
 }
 
+/* ---- OEM logo ticker: wait for images, then run a gapless loop ---------- */
+const vehicleTicker = document.querySelector("[data-vehicle-ticker]");
+if (vehicleTicker) {
+  const track = vehicleTicker.querySelector(".vehicle-ticker__track");
+  const group = vehicleTicker.querySelector("[data-ticker-group]");
+  const imgs = [...(group?.querySelectorAll("img") || [])];
+
+  const measureShift = () => {
+    if (!track || !group) return;
+    // Exact group width avoids % rounding gaps that flash empty on mobile.
+    track.style.setProperty("--ticker-shift", `${group.getBoundingClientRect().width}px`);
+  };
+
+  const markReady = () => {
+    measureShift();
+    vehicleTicker.classList.add("is-ready");
+  };
+
+  const whenDecoded = (img) => {
+    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+    if (typeof img.decode === "function") {
+      return img.decode().catch(() => {});
+    }
+    return new Promise((resolve) => {
+      img.addEventListener("load", resolve, { once: true });
+      img.addEventListener("error", resolve, { once: true });
+    });
+  };
+
+  Promise.all(imgs.map(whenDecoded)).then(markReady);
+  // Failsafe so a hung decode never leaves the rail invisible.
+  window.setTimeout(markReady, 1800);
+
+  window.addEventListener("resize", measureShift, { passive: true });
+  if (reduceMotion) markReady();
+}
+
 /* ---- Scroll reveal ------------------------------------------------------- */
 const revealEls = document.querySelectorAll(".reveal");
 if (reduceMotion || !("IntersectionObserver" in window)) {

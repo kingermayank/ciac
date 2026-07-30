@@ -31,6 +31,21 @@
       type="font/woff2"
       crossorigin
     />
+    <link
+      rel="preload"
+      href="/assets/brands/tesla.png"
+      as="image"
+    />
+    <link
+      rel="preload"
+      href="/assets/brands/lucid.png"
+      as="image"
+    />
+    <link
+      rel="preload"
+      href="/assets/brands/rivian.png"
+      as="image"
+    />
     <title>Coverage in a Click | Lifetime EV &amp; hybrid battery protection</title>
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
@@ -121,50 +136,30 @@
           class="vehicle-ticker__stage"
           tabindex="0"
           aria-label="Supported brands: Tesla, Lucid, Rivian, Chevrolet, Toyota, Hyundai, Volkswagen, and Honda"
+          data-vehicle-ticker
         >
-          <!-- Four identical groups keep the track wider than any viewport, so
-               logos read end to end (no mid-scroll gap) and only fade at the
-               masked edges. -->
+          <!-- Two identical groups. JS measures one group and animates by that
+               width so the loop never opens a blank gap on mobile. -->
           <div class="vehicle-ticker__track">
-            <ul class="vehicle-ticker__group" role="list">
-              <li class="vehicle-ticker__item"><img src="/assets/brands/tesla.png" alt="Tesla" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/lucid.png" alt="Lucid" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/rivian.png" alt="Rivian" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/chevrolet.png" alt="Chevrolet" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/toyota.png" alt="Toyota" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/hyundai.png" alt="Hyundai" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/volkswagen.png" alt="Volkswagen" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/honda.png" alt="Honda" width="240" height="180" /></li>
+            <ul class="vehicle-ticker__group" role="list" data-ticker-group>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/tesla.png" alt="Tesla" width="240" height="180" loading="eager" decoding="async" fetchpriority="high" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/lucid.png" alt="Lucid" width="240" height="180" loading="eager" decoding="async" fetchpriority="high" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/rivian.png" alt="Rivian" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/chevrolet.png" alt="Chevrolet" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/toyota.png" alt="Toyota" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/hyundai.png" alt="Hyundai" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/volkswagen.png" alt="Volkswagen" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/honda.png" alt="Honda" width="240" height="180" loading="eager" decoding="async" /></li>
             </ul>
             <ul class="vehicle-ticker__group" role="list" aria-hidden="true">
-              <li class="vehicle-ticker__item"><img src="/assets/brands/tesla.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/lucid.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/rivian.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/chevrolet.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/toyota.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/hyundai.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/volkswagen.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/honda.png" alt="" width="240" height="180" /></li>
-            </ul>
-            <ul class="vehicle-ticker__group" role="list" aria-hidden="true">
-              <li class="vehicle-ticker__item"><img src="/assets/brands/tesla.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/lucid.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/rivian.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/chevrolet.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/toyota.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/hyundai.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/volkswagen.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/honda.png" alt="" width="240" height="180" /></li>
-            </ul>
-            <ul class="vehicle-ticker__group" role="list" aria-hidden="true">
-              <li class="vehicle-ticker__item"><img src="/assets/brands/tesla.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/lucid.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/rivian.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/chevrolet.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/toyota.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/hyundai.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/volkswagen.png" alt="" width="240" height="180" /></li>
-              <li class="vehicle-ticker__item"><img src="/assets/brands/honda.png" alt="" width="240" height="180" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/tesla.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/lucid.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/rivian.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/chevrolet.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/toyota.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/hyundai.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/volkswagen.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
+              <li class="vehicle-ticker__item"><img src="/assets/brands/honda.png" alt="" width="240" height="180" loading="eager" decoding="async" /></li>
             </ul>
           </div>
         </div>
@@ -217,21 +212,39 @@
         </div>
       </section>
 
-      <!-- ===================== Warranty-cliff road ===================== -->
-      <section class="road-band reveal" aria-labelledby="road-band-title">
-        <img
-          src="/src/assets/optimized/highway-dusk-b2.webp"
-          alt="An electric car traveling along a quiet highway at blue hour."
-          width="2000"
-          height="848"
-          loading="lazy"
-          decoding="async"
-        />
-        <div class="road-band-shade" aria-hidden="true"></div>
-        <div class="container road-band-content">
-          <span class="road-band-marker">Most factory battery warranties end here</span>
-          <h2 id="road-band-title">Year eight is where<br /><span class="title-accent">we begin</span>.</h2>
-          <a class="road-band-link" href="#coverage">See what stays covered <span aria-hidden="true">→</span></a>
+      <!-- ===================== Free battery report (RepairWise) ===================== -->
+      <section class="section report-band" id="battery-report" aria-labelledby="report-title">
+        <div class="container">
+          <div class="report-panel reveal">
+            <div class="report-panel__copy">
+              <p class="report-panel__question">
+                What if I have an old, used, or high-mileage vehicle?
+              </p>
+              <h2 id="report-title">
+                We get you a <span class="report-panel__accent">free battery report</span>
+                with our partner.
+              </h2>
+              <a
+                class="btn btn-charge"
+                href="https://www.repairwise.pro/battery4life"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Check your battery
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
+              </a>
+            </div>
+            <figure class="report-panel__visual">
+              <img
+                src="/assets/ink-faq-health-report-icon.png"
+                alt=""
+                width="1024"
+                height="1024"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+          </div>
         </div>
       </section>
 
