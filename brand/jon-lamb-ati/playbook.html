@@ -1,0 +1,898 @@
+<title>One Line Down Playbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,400..600&display=swap">
+<style>
+/* Layout concept: a ledger. One green rule per surface; the claim everyone repeats sits above it, the finding sits below it. */
+:root{
+  /* brand constants: identical in both themes, used inside specimens */
+  --b-ink:#0D1512; --b-paper:#F2F4EF; --b-white:#FFFFFF; --b-signal:#16A34A; --b-ledger:#0A6B38;
+  --b-greenbar:#DCEBD6; --b-down:#B4321F; --b-down-ink:#F2765C; --b-mute:#56655D; --b-mute-ink:#9CAAA2;
+  --b-band-ink:#15221C; --b-line:#C8D1C8; --b-line-ink:#2A3831;
+  /* page theme tokens */
+  --bg:#F2F4EF; --surface:#FFFFFF; --fg:#0D1512; --muted:#56655D; --line:#C8D1C8; --accent:#0A6B38; --band:#E6EDE2; --rule:#16A34A; --neg:#B4321F;
+  --f-sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-voice:"Newsreader",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0D1512;--surface:#131D19;--fg:#F2F4EF;--muted:#9CAAA2;--line:#2A3831;--accent:#4FCB7D;--band:#15221C;--rule:#16A34A;--neg:#F2765C;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0D1512;--surface:#131D19;--fg:#F2F4EF;--muted:#9CAAA2;--line:#2A3831;--accent:#4FCB7D;--band:#15221C;--rule:#16A34A;--neg:#F2765C;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--rule);outline-offset:3px}
+p{margin:0}
+h1,h2,h3,h4{margin:0;text-wrap:balance;font-weight:700}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.cond{font-stretch:68%;font-weight:800;letter-spacing:-.005em;line-height:.95;text-transform:uppercase}
+.voice{font-family:var(--f-voice);font-style:italic}
+sup.c{font-family:var(--f-mono);font-size:10px;line-height:0;margin-left:1px}
+sup.c a{text-decoration:none;color:var(--accent)}
+sup.c + sup.c::before{content:",";color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+/* masthead */
+.mast{padding-block:28px 56px}
+.mast-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:40px}
+.hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:48px;align-items:end}
+.hero-line{display:flex;flex-direction:column;gap:18px}
+.hero-above{font-stretch:68%;font-weight:500;text-transform:uppercase;font-size:clamp(26px,4.2vw,48px);line-height:1;color:var(--muted)}
+.hero-rule{height:8px;background:var(--rule);width:100%}
+.hero-below{font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:clamp(46px,8.6vw,112px);line-height:.9;letter-spacing:-.01em}
+.hero-side{display:flex;flex-direction:column;gap:16px;padding-bottom:6px}
+.hero-side p{max-width:46ch}
+.lede{font-size:19px;line-height:1.45}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px 22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding-block:14px;margin-top:48px}
+nav.toc a{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg);text-decoration:none}
+nav.toc a:hover{color:var(--accent)}
+
+/* sections */
+section{padding-block:64px;border-bottom:1px solid var(--line)}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:24px 48px;margin-bottom:40px;align-items:start}
+.sec-head h2{font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:clamp(34px,5vw,56px);line-height:.95}
+.sec-head p{font-size:18px;line-height:1.5;max-width:60ch}
+h3{font-size:13px;font-family:var(--f-mono);font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.sub{margin-top:56px}
+.grid{display:grid;gap:24px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid>*{min-width:0}
+.item{border-top:2px solid var(--fg);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.item h4{font-size:19px;line-height:1.2}
+.item p{color:var(--muted);font-size:15px}
+.item p b,.item p strong{color:var(--fg);font-weight:600}
+.note{font-size:14px;color:var(--muted);max-width:75ch;margin-top:18px}
+
+/* ledger table */
+.tbl-wrap{overflow-x:auto}
+table.ledger{width:100%;border-collapse:collapse;font-size:15px;min-width:640px}
+table.ledger th{font-family:var(--f-mono);font-size:11.5px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:2px solid var(--fg)}
+table.ledger td{padding:14px;vertical-align:top;border-bottom:1px solid var(--line)}
+table.ledger tr:nth-child(even) td{background:var(--band)}
+table.ledger td:first-child{font-weight:700;white-space:nowrap}
+table.ledger .q{font-family:var(--f-voice);font-style:italic;font-size:16.5px}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--fg);padding:2px 7px;white-space:nowrap}
+.tag.own{background:var(--fg);color:var(--bg)}
+
+/* value prop */
+.vp{background:var(--b-ink);color:var(--b-paper);padding:clamp(28px,5vw,56px);display:grid;gap:22px}
+.vp .mono{color:var(--b-mute-ink)}
+.vp-line{font-size:clamp(24px,3.4vw,40px);line-height:1.15;font-weight:600;max-width:24ch;text-wrap:balance}
+.vp-rule{height:6px;width:96px;background:var(--b-signal)}
+.vp-sub{color:var(--b-mute-ink);max-width:62ch}
+
+/* voices */
+.voices{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:1px solid var(--line);background:var(--surface)}
+.voices>div{padding:22px 24px;border-bottom:1px solid var(--line);min-width:0}
+.voices>div:nth-child(odd){border-right:1px solid var(--line)}
+.voices>div:nth-last-child(-n+2){border-bottom:0}
+.voices .vh{background:var(--band)}
+.voices .vh b{display:block;font-size:19px}
+.voices .ed{font-size:17px;font-weight:600;line-height:1.35}
+.voices .fp{font-family:var(--f-voice);font-style:italic;font-size:19.5px;line-height:1.35}
+.voices .lab{display:block;margin-bottom:8px}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 40px}
+.rules li{list-style:none;border-top:1px solid var(--line);padding:12px 0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;font-size:15px}
+.rules ul{margin:0;padding:0}
+.rules li b{font-weight:700}
+.rules li span{color:var(--muted)}
+.rules li span i{font-family:var(--f-voice);font-size:16.5px;color:var(--fg)}
+.ba{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.ba>div{border-left:4px solid var(--line);padding-left:16px}
+.ba>div.after{border-left-color:var(--rule)}
+.ba p.t{font-size:17px;line-height:1.4;margin-top:6px}
+
+/* specimens: brand colours fixed regardless of page theme */
+.spec{container-type:inline-size;position:relative;overflow:hidden;font-family:var(--f-sans)}
+.spec.paper{background:var(--b-paper);color:var(--b-ink);border:1px solid var(--b-line)}
+.spec.white{background:var(--b-white);color:var(--b-ink);border:1px solid var(--b-line)}
+.spec.ink{background:var(--b-ink);color:var(--b-paper);border:1px solid var(--b-line-ink)}
+.spec .m{font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.07em}
+.cap{display:flex;justify-content:space-between;gap:12px;margin-top:10px;flex-wrap:wrap}
+.cap b{font-size:14px}
+
+/* logos */
+.logo-stage{aspect-ratio:16/10;display:grid;place-items:center}
+.wm{display:inline-flex;flex-direction:column;font-stretch:66%;text-transform:uppercase;line-height:.86;letter-spacing:.005em}
+.wm .a{font-weight:400;font-size:9.6cqw}
+.wm .r{height:.95cqw;background:var(--b-signal);margin:1.1cqw 0 1.25cqw}
+.wm .i{font-weight:800;font-size:9.6cqw}
+.sig{display:inline-flex;align-items:center;gap:2.2cqw;font-family:var(--f-voice);font-style:italic;font-size:10cqw;line-height:1}
+.sig .r{width:9cqw;height:.95cqw;background:var(--b-signal);flex:none}
+.tick{display:inline-flex;flex-direction:column;align-items:stretch;font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:22cqw;line-height:.82}
+.tick .r{height:3.2cqw;background:var(--b-signal);margin-top:2.4cqw}
+.lock{display:flex;flex-direction:column;gap:3cqw;align-items:flex-start}
+.lock .wm .a,.lock .wm .i{font-size:7cqw}.lock .wm .r{height:.7cqw;margin:.8cqw 0 .95cqw}
+.lock .sig{font-size:4.2cqw;gap:1.2cqw}.lock .sig .r{width:4.4cqw;height:.45cqw}
+.avatars{display:flex;gap:6cqw;align-items:center;justify-content:center}
+.av{width:26cqw;aspect-ratio:1;display:grid;place-items:center;background:var(--b-ink);color:var(--b-paper);container-type:inline-size}
+.av.round{border-radius:50%;background:var(--b-greenbar);color:var(--b-ink)}
+.av .tick{font-size:38cqw}.av .tick .r{height:6cqw;margin-top:4cqw}
+.av .ph{font-family:var(--f-mono);font-size:9cqw;text-transform:uppercase;letter-spacing:.06em;text-align:center;line-height:1.3}
+
+/* palette */
+.sw{display:flex;flex-direction:column;border:1px solid var(--line);background:var(--surface);min-width:0}
+.sw .chip{height:92px;display:flex;align-items:flex-end;padding:10px 12px;font-family:var(--f-mono);font-size:12px}
+.sw .meta{padding:12px;display:flex;flex-direction:column;gap:4px}
+.sw .meta b{font-size:15px}
+.sw .meta span{font-size:13.5px;color:var(--muted)}
+.ratio{display:flex;height:34px;border:1px solid var(--line)}
+.ratio div{display:flex;align-items:center;padding:0 10px;font-family:var(--f-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;overflow:hidden;white-space:nowrap}
+
+/* type specimens */
+.type-row{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;padding:22px 0;border-top:1px solid var(--line);align-items:baseline}
+.type-row .meta{display:flex;flex-direction:column;gap:4px}
+.type-row .meta b{font-size:15px}
+.type-row .meta span{font-size:13px;color:var(--muted)}
+.ts-display{font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:clamp(38px,6.4vw,76px);line-height:.92}
+.ts-text{font-size:18px;line-height:1.5;max-width:60ch}
+.ts-voice{font-family:var(--f-voice);font-style:italic;font-size:clamp(24px,3vw,34px);line-height:1.25;max-width:32ch}
+.ts-data{font-family:var(--f-mono);font-size:15px;line-height:1.9;font-variant-numeric:tabular-nums}
+.ts-data span{color:var(--muted)}
+
+/* anatomy */
+.anat{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:40px;align-items:start}
+.card45{aspect-ratio:4/5;padding:6.6%;display:flex;flex-direction:column}
+.card45 .kick{font-size:2.5cqw}
+.card45 .above{margin-top:auto;font-stretch:68%;font-weight:500;text-transform:uppercase;font-size:7.6cqw;line-height:1;color:var(--b-mute)}
+.spec.ink .above{color:var(--b-mute-ink)}
+.card45 .rl{height:.75cqw;background:var(--b-signal);margin:4cqw 0}
+.card45 .below{font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:15.5cqw;line-height:.88;letter-spacing:-.01em}
+.card45 .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:3cqw;font-size:2.3cqw;padding-top:6cqw}
+.card45 .foot .m{color:var(--b-mute)}
+.spec.ink .foot .m{color:var(--b-mute-ink)}
+.mini-tick{display:inline-flex;flex-direction:column;font-stretch:66%;font-weight:800;text-transform:uppercase;font-size:5.4cqw;line-height:.82}
+.mini-tick i{display:block;height:.8cqw;background:var(--b-signal);margin-top:.7cqw}
+.mini-sig{display:inline-flex;align-items:center;gap:1.4cqw;font-family:var(--f-voice);font-style:italic;font-size:4.4cqw;line-height:1}
+.mini-sig i{display:block;width:4.4cqw;height:.7cqw;background:var(--b-signal)}
+ol.steps{margin:0;padding:0;counter-reset:s;display:grid;gap:0}
+ol.steps li{list-style:none;counter-increment:s;display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:13px 0;border-top:1px solid var(--line);font-size:15px}
+ol.steps li::before{content:counter(s);font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:3px}
+ol.steps li b{display:block}
+ol.steps li span{color:var(--muted)}
+
+/* templates */
+.tpl{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:40px;padding-block:44px;border-top:2px solid var(--fg)}
+.tpl:first-of-type{margin-top:8px}
+.tpl-info{display:flex;flex-direction:column;gap:12px}
+.tpl-info h4{font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:30px;line-height:1}
+.tpl-info p{font-size:15px;color:var(--muted)}
+.tpl-info dl{margin:6px 0 0;display:grid;grid-template-columns:86px minmax(0,1fr);gap:6px 12px;font-size:13.5px}
+.tpl-info dt{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+.tpl-info dd{margin:0}
+.tpl-body{min-width:0}
+
+/* linkedin post mock */
+.li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:24px;align-items:start}
+.li-post{background:var(--surface);border:1px solid var(--line);padding:20px}
+.li-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.li-av{width:44px;height:44px;border-radius:50%;background:var(--band);display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;color:var(--muted);flex:none}
+.li-head b{display:block;font-size:15px}
+.li-head span{font-size:12.5px;color:var(--muted);display:block;line-height:1.3}
+.li-copy p{font-size:15px;line-height:1.5;margin-bottom:12px}
+.li-copy p:last-child{margin-bottom:0}
+.slot{font-family:var(--f-mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:2px}
+
+/* carousel */
+.slides{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.slide{aspect-ratio:4/5;padding:6.6%;display:flex;flex-direction:column}
+.slide .kick{font-size:2.6cqw;display:flex;justify-content:space-between}
+.slide .kick span:last-child{opacity:.7}
+.slide h5{margin:5cqw 0 0;font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:9.4cqw;line-height:.94}
+.slide .dek{font-size:3.7cqw;line-height:1.35;margin-top:3cqw;color:var(--b-mute)}
+.spec.ink .dek{color:var(--b-mute-ink)}
+.slide .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;font-size:2.3cqw;padding-top:4cqw}
+.slide .foot .m{color:var(--b-mute)}
+.spec.ink .foot .m{color:var(--b-mute-ink)}
+.rows{margin-top:auto;display:flex;flex-direction:column}
+.rw{display:grid;grid-template-columns:27cqw minmax(0,1fr) 15cqw;align-items:center;gap:2cqw;padding:1.7cqw 2cqw;font-size:3.3cqw}
+.rw:nth-child(odd){background:var(--b-greenbar)}
+.rw .v{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;font-size:3.1cqw}
+.rw .bar{height:2.6cqw;background:var(--b-down);border-radius:0 .8cqw .8cqw 0}
+.rw .st{font-family:var(--f-mono);font-size:2.7cqw;text-transform:uppercase;letter-spacing:.06em}
+.rw .dot{width:2.6cqw;height:2.6cqw;border-radius:50%;background:var(--b-ink);justify-self:end}
+.rw .dot.off{background:transparent;box-shadow:inset 0 0 0 .5cqw var(--b-ink)}
+.rw.two{grid-template-columns:minmax(0,1fr) 22cqw 4cqw}
+.big{font-stretch:68%;font-weight:800;font-size:25cqw;line-height:.82;letter-spacing:-.02em}
+.big small{font-size:9cqw;font-weight:500}
+.split{margin-top:auto;display:flex;flex-direction:column;gap:5cqw}
+.share .lbl{display:flex;justify-content:space-between;font-size:3.1cqw;margin-bottom:1.4cqw}
+.share .lbl b{font-family:var(--f-mono);font-weight:500}
+.share .trk{height:6.5cqw;background:var(--b-band-ink);display:flex}
+.share .trk i{display:block;height:100%;background:var(--b-signal)}
+.watch{margin-top:5cqw;display:flex;flex-direction:column;gap:3.4cqw}
+.watch p{font-family:var(--f-voice);font-style:italic;font-size:5cqw;line-height:1.2;display:grid;grid-template-columns:6cqw minmax(0,1fr)}
+.watch p b{font-family:var(--f-mono);font-style:normal;font-weight:400;font-size:2.8cqw;padding-top:1.2cqw;color:var(--b-mute)}
+
+/* newsletter + cover */
+.banner{aspect-ratio:4/1;display:flex;justify-content:space-between;align-items:center;padding:0 4.4%}
+.banner .wm .a,.banner .wm .i{font-size:5.6cqw}.banner .wm .r{height:.55cqw;margin:.65cqw 0 .75cqw}
+.banner .right{text-align:right;font-size:1.25cqw;line-height:1.9;color:var(--b-mute-ink)}
+.banner .right b{color:var(--b-paper);font-weight:500}
+.mail{background:var(--surface);border:1px solid var(--line);border-top:0;padding:clamp(18px,3vw,32px);display:flex;flex-direction:column;gap:14px}
+.mail .subj{display:grid;grid-template-columns:86px minmax(0,1fr);gap:4px 12px;font-size:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.mail .subj dt{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:2px}
+.mail .subj dd{margin:0}
+.mail h5{margin:0;font-size:26px;line-height:1.15;font-weight:800}
+.mail .blk{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;padding-top:12px;border-top:1px solid var(--line);font-size:15px}
+.mail .blk.first{border-top:4px solid var(--rule)}
+.cover{aspect-ratio:1456/816;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.cover .l{padding:4.6cqw;display:flex;flex-direction:column}
+.cover .l .kick{font-size:1.15cqw;color:var(--b-mute)}
+.cover .l h5{margin:auto 0 0;font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:9.2cqw;line-height:.88;letter-spacing:-.01em}
+.cover .l .dek{font-size:1.75cqw;line-height:1.35;margin-top:1.8cqw;max-width:30ch}
+.cover .l .foot{margin-top:2.6cqw;display:flex;gap:2cqw;align-items:flex-end;font-size:1.05cqw;color:var(--b-mute)}
+.cover .l .mini-tick{font-size:2.4cqw}.cover .l .mini-tick i{height:.36cqw;margin-top:.3cqw}
+.cover .r{background:repeating-linear-gradient(to bottom,var(--b-greenbar) 0 12.5%,var(--b-white) 12.5% 25%);padding:4.6cqw;display:flex;flex-direction:column;justify-content:center;color:var(--b-ink)}
+.cover .r .t{font-size:1.15cqw;color:var(--b-mute)}
+.cover .r .n1{font-stretch:68%;font-weight:500;font-size:9cqw;line-height:1;color:var(--b-mute);margin-top:.6cqw}
+.cover .r .rl{height:.5cqw;background:var(--b-signal);margin:2.2cqw 0}
+.cover .r .n2{font-stretch:68%;font-weight:800;font-size:17cqw;line-height:.82;margin-top:.6cqw}
+
+/* sources */
+ol.src{margin:0;padding:0;columns:2;column-gap:48px}
+ol.src li{list-style:none;break-inside:avoid;display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+ol.src li>b{font-family:var(--f-mono);font-weight:400;font-size:12px;color:var(--muted);padding-top:2px}
+ol.src li span{color:var(--muted)}
+footer{padding-block:32px 56px;color:var(--muted);font-size:13.5px}
+
+@media (max-width:900px){
+  .hero,.sec-head,.anat,.tpl,.li{grid-template-columns:minmax(0,1fr)}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:minmax(0,1fr)}
+  .slides{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rules{grid-template-columns:minmax(0,1fr)}
+  ol.src{columns:1}
+  .anat>.spec,.li>.spec{max-width:360px;padding:min(6.6%,23.8px)}
+}
+@media (max-width:600px){
+  section{padding-block:44px}
+  .g2,.ba,.voices{grid-template-columns:minmax(0,1fr)}
+  .voices>div:nth-child(odd){border-right:0}
+  .voices>div:nth-last-child(2){border-bottom:1px solid var(--line)}
+  .voices .vh.second{display:none}
+  .type-row,.mail .blk{grid-template-columns:minmax(0,1fr);gap:8px}
+  .rules li{grid-template-columns:minmax(0,1fr);gap:2px}
+  .slides{grid-template-columns:minmax(0,380px)}
+}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="mast-top">
+    <span class="mono">Jon Lamb × AutoTech Insights · Brand playbook</span>
+    <span class="mono">v2 direction · 18 Nov 2026</span>
+  </div>
+  <div class="hero">
+    <div class="hero-line" aria-label="Brand idea: one line down">
+      <div class="hero-above">Revenue grew at five of seven.</div>
+      <div class="hero-rule"></div>
+      <div class="hero-below">Profit fell at all seven.</div>
+    </div>
+    <div class="hero-side">
+      <p class="lede"><b>One line down.</b> Jon’s best work takes the line the industry is repeating and reads the one beneath it. This playbook turns that habit into the system for both brands: the positioning, the voice, the logo, and every template.</p>
+      <p class="mono">Source of the idea<sup class="c"><a href="#s1">1</a></sup></p>
+      <p class="voice" style="font-size:20px;line-height:1.3">“But look one line down the income statement, and the story flips completely.”</p>
+    </div>
+  </div>
+  <nav class="toc" aria-label="Sections">
+    <a href="#read">1 · The read</a>
+    <a href="#position">2 · Positioning &amp; voice</a>
+    <a href="#identity">3 · Visual identity</a>
+    <a href="#templates">4 · Templates</a>
+    <a href="#draft">5 · What changed from the draft</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</header>
+
+<!-- ───────────── 1 · THE READ ───────────── -->
+<section id="read">
+  <div class="sec-head">
+    <h2>1 · The read</h2>
+    <p>What the bio, five LinkedIn posts and six AutoTech Insights articles say about who Jon is writing for, why his view is different, and which subjects he has the standing to own.</p>
+  </div>
+
+  <h3>Who reads it</h3>
+  <div class="grid g3">
+    <div class="item">
+      <span class="tag own">Primary</span>
+      <h4>The people who run the store</h4>
+      <p>Dealer Principals, GMs and group executives. Jon addresses them by title when he gets to the instruction: <b>“If you’re a Dealer Principal or Group Executive: Stop buying tools you can’t train people on.”</b><sup class="c"><a href="#s3">3</a></sup></p>
+    </div>
+    <div class="item">
+      <span class="tag">Secondary</span>
+      <h4>The people who sell into the store</h4>
+      <p>Vendors, founders and OEM field teams. He writes to them in the same piece, and not gently: <b>“If you’re a vendor: Build for behavior change, not just feature adoption.”</b><sup class="c"><a href="#s3">3</a></sup></p>
+    </div>
+    <div class="item">
+      <span class="tag">Tertiary</span>
+      <h4>The people who model the sector</h4>
+      <p>Investors and analysts. The earnings piece speaks to <b>“anyone modeling this sector”</b> and asks what he’d ask <b>“as an operator or investor.”</b><sup class="c"><a href="#s1">1</a></sup> The About page names executives, entrepreneurs and investors.<sup class="c"><a href="#s7">7</a></sup></p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>What makes his view distinct</h3>
+    <div class="grid g3">
+      <div class="item">
+        <h4>He has run a business on every line of the dealer P&amp;L</h4>
+        <p>Advertising (president of a direct-response agency with $90M+ in billings), attribution (founded Transparency AI, holds the patent), lending (CEO of Drivrz Financial), F&amp;I (co-founded Coverage in a Click), and connected-vehicle retention (EVP at Ikon Technologies).<sup class="c"><a href="#s8">8</a></sup> Most commentators know one of these lines.</p>
+      </div>
+      <div class="item">
+        <h4>He publishes the proof</h4>
+        <p>The earnings analysis links each figure to the filing.<sup class="c"><a href="#s1">1</a></sup> The attribution piece ships the code: <b>“pull the code and run your own numbers.”</b><sup class="c"><a href="#s10">10</a></sup> The publication says outright that it is <b>“not a pay-to-play publication.”</b><sup class="c"><a href="#s7">7</a></sup></p>
+      </div>
+      <div class="item">
+        <h4>He writes from the Dealer’s side of the table</h4>
+        <p>“Dealer” is capitalised in every article and post. The questions are the Dealer’s questions: who owns the signal, whose answer key grades the media buy, who gets left with shelfware.<sup class="c"><a href="#s2">2</a></sup><sup class="c"><a href="#s4">4</a></sup></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Topics he can credibly own</h3>
+    <div class="tbl-wrap">
+    <table class="ledger">
+      <thead><tr><th>Territory</th><th>The line he reads under</th><th>Why he has standing</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Dealer profit mechanics</td>
+          <td><span class="q">“That’s not a demand problem. That’s a margin problem.”</span><sup class="c"><a href="#s1">1</a></sup></td>
+          <td>Ran an auto lender; reads SG&amp;A-to-gross, floorplan and captive-finance accounting in the filings. Was already writing on margin compression in 2024.<sup class="c"><a href="#s11">11</a></sup></td>
+          <td><span class="tag own">Own</span></td>
+        </tr>
+        <tr>
+          <td>Control of the customer after the sale</td>
+          <td><span class="q">“The Connected Car Is Not the Story. Control Is.”</span><sup class="c"><a href="#s2">2</a></sup></td>
+          <td>Sells and helped architect connected-vehicle retention at Ikon.<sup class="c"><a href="#s8">8</a></sup> His LinkedIn post on this drew the most discussion of the five read: 29 reactions, 17 comments, 5 reposts.<sup class="c"><a href="#s9">9</a></sup></td>
+          <td><span class="tag own">Own</span></td>
+        </tr>
+        <tr>
+          <td>Proof over dashboards</td>
+          <td><span class="q">“You are grading their homework with their own answer key.”</span><sup class="c"><a href="#s4">4</a></sup></td>
+          <td>Patent holder in digital attribution; open-sourced a DMS-to-publisher matching pipeline.<sup class="c"><a href="#s4">4</a></sup><sup class="c"><a href="#s10">10</a></sup></td>
+          <td><span class="tag own">Own</span></td>
+        </tr>
+        <tr>
+          <td>AI adoption on the floor</td>
+          <td><span class="q">“You bought the tool. You skipped the point.”</span><sup class="c"><a href="#s3">3</a></sup></td>
+          <td>Sits on the vendor side and says so: “The vendor community shares ownership of this problem.”<sup class="c"><a href="#s3">3</a></sup></td>
+          <td><span class="tag own">Own</span></td>
+        </tr>
+        <tr>
+          <td>Industry structure (OEMs, China, EVs)</td>
+          <td><span class="q">“The real product is now the ecosystem.”</span><sup class="c"><a href="#s5">5</a></sup></td>
+          <td>Well read and the most-liked recent piece, but written from outside. Keep it tied to what it means for the Dealer.</td>
+          <td><span class="tag">Comment</span></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Sample sizes are small: the publication reports “hundreds of subscribers” and each post has single-digit likes, so engagement is a hint, not proof. The LinkedIn profile was read from a data snapshot dated 12 Nov 2026, plus five public posts; I could not browse his full feed.</p>
+  </div>
+</section>
+
+<!-- ───────────── 2 · POSITIONING & VOICE ───────────── -->
+<section id="position">
+  <div class="sec-head">
+    <h2>2 · Positioning &amp; voice</h2>
+    <p>One promise, three pillars, and a rule for how the publication’s voice and Jon’s voice share a page.</p>
+  </div>
+
+  <div class="vp">
+    <span class="mono">Value proposition</span>
+    <p class="vp-line">Automotive retail, read one line down by an operator who has run the business on every line.</p>
+    <div class="vp-rule"></div>
+    <p class="vp-sub">For Dealers and the people who fund and supply them. Each issue takes the number or claim the industry is repeating, shows what sits underneath it, and says what to do about it. Nobody pays to appear.</p>
+  </div>
+  <p class="note">This replaces the current descriptor, “your go-to source for breaking news and bold perspectives on the investors, innovators, and founders revolutionizing the automotive landscape.”<sup class="c"><a href="#s6">6</a></sup> The publication ran five pieces between February and August 2026, so it is not a news service, and “revolutionizing” is the vocabulary the recent articles argue against. Keep the half that is true and rare: no pay-to-play.</p>
+
+  <div class="sub">
+    <h3>Three pillars</h3>
+    <div class="grid g3">
+      <div class="item">
+        <span class="mono">Pillar 1</span>
+        <h4>Read the line below</h4>
+        <p>Start with the claim everyone has heard. Turn it with the figure underneath. <b>Every headline has two beats.</b></p>
+        <p>Shaped by: “Revenue grew at five of the seven… Profit fell at all seven.”<sup class="c"><a href="#s1">1</a></sup> “Compliance gets measured. Competency does not.”<sup class="c"><a href="#s3">3</a></sup></p>
+      </div>
+      <div class="item">
+        <span class="mono">Pillar 2</span>
+        <h4>Show the work</h4>
+        <p>Name the source on the surface, give the denominator, publish the method when there is one. <b>A reader should be able to check it.</b></p>
+        <p>Shaped by: filing links in the earnings piece;<sup class="c"><a href="#s1">1</a></sup> “No vanity metrics… Just pure, deterministic data.”<sup class="c"><a href="#s10">10</a></sup></p>
+      </div>
+      <div class="item">
+        <span class="mono">Pillar 3</span>
+        <h4>Stand with the Dealer</h4>
+        <p>Use the trade’s own words (fixed ops, floorplan, BDC, RO, TO). Close with what an operator should do or watch. <b>Disclose your seat.</b></p>
+        <p>Shaped by: “What To Do About It”;<sup class="c"><a href="#s3">3</a></sup> “whether they remain connected to the Dealer that sold them.”<sup class="c"><a href="#s2">2</a></sup></p>
+      </div>
+    </div>
+    <p class="note"><b style="color:var(--fg)">On disclosing the seat.</b> Jon sells connected-vehicle technology at Ikon and co-founded an F&amp;I marketplace.<sup class="c"><a href="#s8">8</a></sup> The connected-car article argues a position that helps that business and does not say so.<sup class="c"><a href="#s2">2</a></sup> “No pay-to-play” gets stronger, not weaker, with one line under any piece that touches his own work: <i class="voice" style="font-size:16px;color:var(--fg)">I work at Ikon Technologies, which sells in this category.</i> Product promotion, like the SEMA post,<sup class="c"><a href="#s12">12</a></sup> stays on Jon’s profile and never carries the publication’s mark.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Two voices, one finding</h3>
+    <p style="max-width:70ch;margin-bottom:20px">The publication states what is true and proves it. Jon says what he makes of it and who should act. They always agree on the facts and never sound the same. Type makes the difference visible: the publication speaks in upright sans, Jon in italic serif.</p>
+    <div class="voices">
+      <div class="vh"><span class="mono">The finding</span><b>AutoTech Insights</b><span style="color:var(--muted);font-size:14px">Third person. Present tense. Number, denominator, source.</span></div>
+      <div class="vh second"><span class="mono">The read</span><b>Jon Lamb</b><span style="color:var(--muted);font-size:14px">First person. A judgment, a role, an instruction.</span></div>
+
+      <div><span class="mono lab">Margins · sample</span><p class="ed">Revenue grew at five of the seven public dealer groups in Q2 2026. Adjusted net income fell at all seven.</p></div>
+      <div><span class="mono lab">Margins · sample</span><p class="fp">I went through all seven releases. Nobody has a demand problem. They have a gross profit problem, and they are trying to cut their way out of it.</p></div>
+
+      <div><span class="mono lab">Connected car · sample</span><p class="ed">Embedded telematics is forecast to reach 93% of new vehicles by 2029. Toyota and VW route vehicle-health alerts to the preferred Dealer. BMW routes them to the brand.</p></div>
+      <div><span class="mono lab">Connected car · sample</span><p class="fp">If you’re a Dealer, ask your OEM rep one question this week: when my customer’s car throws a code, who hears about it first?</p></div>
+
+      <div><span class="mono lab">AI tools · sample</span><p class="ed">Dealer groups are adding AI tools faster than they are training people to use them. Utilisation, not the next purchase, is the constraint.</p></div>
+      <div><span class="mono lab">AI tools · sample</span><p class="fp">I sell technology to Dealers. If I can’t show you what changed on your floor, don’t renew me.</p></div>
+    </div>
+    <p class="note">The six samples are new copy written for this playbook from facts and phrasing in the cited articles.<sup class="c"><a href="#s1">1</a></sup><sup class="c"><a href="#s2">2</a></sup><sup class="c"><a href="#s3">3</a></sup> Inside a long article the first person appears in marked places only: the sign-off section (“What I’m watching”) and disclosure lines.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Voice rules, taken from the writing</h3>
+    <div class="rules">
+      <ul>
+        <li><b>Two beats</b><span>The claim, then the turn. <i class="voice">“The tool is not the answer. The people… are the answer.”</i><sup class="c"><a href="#s3">3</a></sup></span></li>
+        <li><b>Number first</b><span>With its denominator: <i class="voice">“just 13% of Q2 revenue but… 45% of gross profit.”</i><sup class="c"><a href="#s1">1</a></sup></span></li>
+        <li><b>Name the pattern</b><span>One coined phrase per piece: the Margin Mirage, the Tool Trap, <i class="voice">“compliance theater.”</i><sup class="c"><a href="#s1">1</a></sup><sup class="c"><a href="#s3">3</a></sup></span></li>
+        <li><b>Capital-D Dealer</b><span>Always. It is already the habit and it signals whose side the writing is on.<sup class="c"><a href="#s2">2</a></sup></span></li>
+      </ul>
+      <ul>
+        <li><b>Call the role</b><span>Address the instruction to a title: Dealer Principal, vendor, OEM.<sup class="c"><a href="#s3">3</a></sup></span></li>
+        <li><b>End on the watch list</b><span>Close with what to do or watch next quarter: <i class="voice">“What I’m Watching Into Q3.”</i><sup class="c"><a href="#s1">1</a></sup></span></li>
+        <li><b>Source on the surface</b><span>Every chart and card carries its source line. No source, no card.</span></li>
+        <li><b>Retire</b><span>Unleashing, revolutionizing, new dawn, next-gen, go-to source, breaking news. These belong to the 2023 headlines.<sup class="c"><a href="#s6">6</a></sup></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>The standard is already in the archive</h3>
+    <div class="ba">
+      <div>
+        <span class="mono">Drifts academic · same article<sup class="c"><a href="#s2">2</a></sup></span>
+        <p class="t">“While connectivity is rapidly becoming a ubiquitous feature in the automotive industry, the extent of Dealer influence over connected relationships remains a pivotal and unresolved issue.”</p>
+      </div>
+      <div class="after">
+        <span class="mono">On voice · its own closing line<sup class="c"><a href="#s2">2</a></sup></span>
+        <p class="t"><b>“Cars will be connected regardless. The key question is whether they remain connected to the Dealer that sold them.”</b></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Sample profile copy</h3>
+    <div class="grid g2">
+      <div class="item">
+        <span class="mono">LinkedIn headline · Jon</span>
+        <p class="voice" style="font-size:21px;line-height:1.3;color:var(--fg)">I read automotive retail one line down. Founder, AutoTech Insights. EVP, Ikon Technologies.</p>
+        <p>Current: “EVP of Sales &amp; Partnerships | Automotive AI &amp; Connected Mobility.”<sup class="c"><a href="#s8">8</a></sup> Accurate, but it could be anyone’s.</p>
+      </div>
+      <div class="item">
+        <span class="mono">Publication descriptor · Substack and email</span>
+        <p style="font-size:19px;font-weight:600;line-height:1.3;color:var(--fg)">Automotive retail, one line down. Margins, data and control for the people who run, fund and supply the store. No pay-to-play.</p>
+        <p>Current title: “AutoTech Insights: Innovation, Investment, and Disruption.”<sup class="c"><a href="#s6">6</a></sup></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 3 · VISUAL IDENTITY ───────────── -->
+<section id="identity">
+  <div class="sec-head">
+    <h2>3 · Visual identity</h2>
+    <p>One device carries both brands: a green rule. The publication’s name splits across it. Jon’s name follows it, like a signed line. Everything else is ledger material: tabular figures, green-bar rows and a source line.</p>
+  </div>
+
+  <h3>Logo direction</h3>
+  <div class="grid g2">
+    <figure style="margin:0">
+      <div class="spec paper logo-stage"><div class="wm"><span class="a">AutoTech</span><span class="r"></span><span class="i">Insights</span></div></div>
+      <figcaption class="cap"><b>Publication wordmark</b><span class="mono">The industry above the line, the insight below it</span></figcaption>
+    </figure>
+    <figure style="margin:0">
+      <div class="spec ink logo-stage"><div class="sig"><span class="r"></span><span>Jon Lamb</span></div></div>
+      <figcaption class="cap"><b>Jon’s signature</b><span class="mono">The same rule, turned into a sign-off dash</span></figcaption>
+    </figure>
+    <figure style="margin:0">
+      <div class="spec ink logo-stage"><div class="avatars">
+        <div class="av"><div class="tick">ATI<span class="r"></span></div></div>
+        <div class="av round"><span class="ph">Jon’s<br>portrait</span></div>
+      </div></div>
+      <figcaption class="cap"><b>Avatars</b><span class="mono">ATI reads as a ticker symbol · Jon is always a face</span></figcaption>
+    </figure>
+    <figure style="margin:0">
+      <div class="spec white logo-stage"><div class="lock">
+        <div class="wm"><span class="a">AutoTech</span><span class="r"></span><span class="i">Insights</span></div>
+        <div class="sig"><span class="r"></span><span>Jon Lamb</span></div>
+      </div></div>
+      <figcaption class="cap"><b>Endorsed lockup</b><span class="mono">Newsletter header, about page, speaker slides</span></figcaption>
+    </figure>
+  </div>
+  <p class="note">These are drawn in live type to show the direction. Final marks should be outlined vectors with the rule fixed at one tenth of the cap height, clear space of one cap height on all sides, and a 16 px minimum for the ticker. The rule is the only part that is ever green.</p>
+
+  <div class="sub">
+    <h3>Colour</h3>
+    <div class="grid g4">
+      <div class="sw"><div class="chip" style="background:#0D1512;color:#F2F4EF">#0D1512</div><div class="meta"><b>Ink</b><span>Text on paper. The dark ground.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#F2F4EF;color:#0D1512">#F2F4EF</div><div class="meta"><b>Paper</b><span>The default ground. Cool, not cream.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#16A34A;color:#0D1512">#16A34A</div><div class="meta"><b>Signal</b><span>The rule and data fills. Already the Substack accent, so it stays.<sup class="c"><a href="#s6">6</a></sup></span></div></div>
+      <div class="sw"><div class="chip" style="background:#0A6B38;color:#FFFFFF">#0A6B38</div><div class="meta"><b>Ledger</b><span>Green for text and links on paper. 5.98:1.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#DCEBD6;color:#0D1512">#DCEBD6</div><div class="meta"><b>Greenbar</b><span>Alternate rows in tables and charts, like the DMS printout.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#B4321F;color:#FFFFFF">#B4321F</div><div class="meta"><b>Down</b><span>Negative data only. #F2765C on ink. Never decoration.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#56655D;color:#FFFFFF">#56655D</div><div class="meta"><b>Mute</b><span>The line above the rule, labels, sources. #9CAAA2 on ink.</span></div></div>
+      <div class="sw"><div class="chip" style="background:#FFFFFF;color:#0D1512;border-bottom:1px solid var(--line)">#FFFFFF</div><div class="meta"><b>White</b><span>Cards and alternate table rows.</span></div></div>
+    </div>
+    <div class="grid g2" style="margin-top:20px">
+      <div><div class="ratio"><div style="flex:78;background:#F2F4EF;color:#0D1512">Paper 78</div><div style="flex:14;background:#0D1512;color:#F2F4EF">Ink 14</div><div style="flex:6;background:#DCEBD6;color:#0D1512">6</div><div style="flex:2;background:#16A34A"></div></div><p class="note" style="margin-top:8px">Publication surfaces lead with paper.</p></div>
+      <div><div class="ratio"><div style="flex:80;background:#0D1512;color:#F2F4EF">Ink 80</div><div style="flex:16;background:#F2F4EF;color:#0D1512">Paper 16</div><div style="flex:2;background:#15221C"></div><div style="flex:2;background:#16A34A"></div></div><p class="note" style="margin-top:8px">Jon’s first-person surfaces lead with ink.</p></div>
+    </div>
+    <p class="note">The draft’s Signal green measured 3.14:1 on paper by its own table, so it could not be used for text. Splitting green into Signal (fills) and Ledger (text) fixes that. Signal covers about 2% of any surface: one rule, or the highlighted mark in a chart.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Typography</h3>
+    <div class="type-row">
+      <div class="meta"><b>Archivo Condensed 800</b><span>Headlines, numbers, the wordmark. Uppercase, width 66–70%.</span></div>
+      <div class="ts-display">The Margin Mirage</div>
+    </div>
+    <div class="type-row">
+      <div class="meta"><b>Archivo 400 / 600</b><span>Body and deks. Same family at normal width.</span></div>
+      <p class="ts-text">Gross profit dollars are shrinking faster than SG&amp;A can be cut. Fixed operations was 13% of Group 1’s revenue and 45% of its gross profit.</p>
+    </div>
+    <div class="type-row">
+      <div class="meta"><b>Newsreader Italic</b><span>Jon’s voice only: quotes, sign-offs, disclosure lines.</span></div>
+      <p class="ts-voice">“The question I’d be asking as an operator or investor right now…”<sup class="c" style="font-style:normal"><a href="#s1">1</a></sup></p>
+    </div>
+    <div class="type-row">
+      <div class="meta"><b>IBM Plex Mono</b><span>Figures, labels, sources. Tabular. True minus sign.</span></div>
+      <div class="ts-data num">SONIC AUTOMOTIVE &nbsp; −23.5% &nbsp; <span>ADJ. NET INCOME YOY</span><br>LITHIA &amp; DRIVEWAY &nbsp;&nbsp; −5.5% &nbsp; <span>SOURCE · Q2 2026 FILINGS</span></div>
+    </div>
+    <p class="note">All three families are open-licensed on Google Fonts. If you see italic serif, Jon is speaking. If you see condensed capitals, the publication is.</p>
+  </div>
+
+  <div class="sub">
+    <h3>Layout rules</h3>
+    <div class="anat">
+      <div class="spec paper card45">
+        <div class="m kick">Q2 2026 · Public dealer groups</div>
+        <div class="above">Revenue grew at five of seven.</div>
+        <div class="rl"></div>
+        <div class="below">Profit fell at all seven.</div>
+        <div class="foot"><span class="mini-tick">ATI<i></i></span><span class="m">Source · company filings</span></div>
+      </div>
+      <ol class="steps">
+        <li><div><b>One rule per surface.</b><span>Full content width, Signal green, 1/135 of the short side thick (8 px at 1080). It never appears twice.</span></div></li>
+        <li><div><b>Above the rule: the claim.</b><span>Mute colour, medium weight, half the size of what follows. It is what the reader already believes.</span></div></li>
+        <li><div><b>Below the rule: the finding.</b><span>Full contrast, heaviest weight, the largest thing on the surface.</span></div></li>
+        <li><div><b>Left-aligned on a 12-column grid.</b><span>Margin is 1/15 of the width (72 px at 1080). Nothing is centred.</span></div></li>
+        <li><div><b>Label strip on top, source strip at the bottom.</b><span>Mono, uppercase. Period and peer set on top. Mark at bottom left, source at bottom right.</span></div></li>
+        <li><div><b>Data sits on greenbar rows.</b><span>Label each mark directly. One series per chart. Declines take the Down colour and a true minus sign.</span></div></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Imagery</h3>
+    <div class="grid g3">
+      <div class="item"><h4>The number is the image</h4><p>Lead with typography and one chart. Current covers are generated illustrations, one captioned “AI generated image,”<sup class="c"><a href="#s5">5</a></sup> and no two look related. Retire them.</p></div>
+      <div class="item"><h4>Documents from the trade</h4><p>When a picture helps, use the paperwork: an income statement line, a repair order, a window sticker, a VIN plate, a filing page. Flat, cropped tight, ink on greenbar.</p></div>
+      <div class="item"><h4>Jon’s face, on Jon’s posts</h4><p>One portrait set, shot plainly, used in ink-and-green duotone. It appears on first-person posts and the about page, never on a data card.</p></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Where each piece shows up</h3>
+    <div class="tbl-wrap">
+    <table class="ledger">
+      <thead><tr><th>Surface</th><th>Mark</th><th>Ground</th><th>What makes it recognisable</th></tr></thead>
+      <tbody>
+        <tr><td>Website (Substack)</td><td>Wordmark in the header, ticker as favicon</td><td>Paper</td><td>Accent set to Signal, article cover template on every post, new descriptor on the home and About pages. Substack’s theme controls are limited, so the uploaded assets carry the system.</td></tr>
+        <tr><td>Newsletter</td><td>Endorsed lockup in the email banner</td><td>Ink banner, paper body</td><td>The subject line is the two-beat line. Each issue opens with “The line” and “One line down” and closes with Jon’s signed watch list.</td></tr>
+        <tr><td>LinkedIn · Jon</td><td>Portrait avatar, signature on images</td><td>Ink</td><td>Banner carries the value proposition. Insight posts use the read card. Italic serif marks every first-person line.</td></tr>
+        <tr><td>LinkedIn · publication page</td><td>Ticker avatar</td><td>Paper</td><td>Data carousels in the publication’s voice, with Jon signing the last slide.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 4 · TEMPLATES ───────────── -->
+<section id="templates">
+  <div class="sec-head">
+    <h2>4 · Templates</h2>
+    <p>Four reusable formats, all filled with one real topic: <i>The Margin Mirage</i>, the Q2 2026 earnings analysis.<sup class="c"><a href="#s1">1</a></sup> Every figure below comes from that article. The two-beat line, the rule and the source strip stay fixed. Voice, depth and the call to action change.</p>
+  </div>
+
+  <!-- T1 -->
+  <div class="tpl">
+    <div class="tpl-info">
+      <span class="mono">Template 1</span>
+      <h4>LinkedIn insight post</h4>
+      <p>Jon’s first-person read, posted from his profile with one image.</p>
+      <dl>
+        <dt>Voice</dt><dd>Jon, first person</dd>
+        <dt>Image</dt><dd>1080 × 1350, ink ground</dd>
+        <dt>Length</dt><dd>90–130 words, one idea</dd>
+        <dt>Link</dt><dd>First comment, as he does now<sup class="c"><a href="#s9">9</a></sup></dd>
+      </dl>
+    </div>
+    <div class="tpl-body">
+      <div class="li">
+        <div class="li-post">
+          <div class="li-head"><div class="li-av">JL</div><div><b>Jon Lamb</b><span>I read automotive retail one line down. Founder, AutoTech Insights. EVP, Ikon Technologies.</span></div></div>
+          <div class="li-copy">
+            <p><span class="slot">The line</span>Revenue grew at five of the seven public dealer groups in Q2.</p>
+            <p><span class="slot">One line down</span>Profit fell at all seven.</p>
+            <p><span class="slot">The mechanism</span>That’s not a demand problem. It’s a margin problem. I went through every release and the story is the same: gross profit dollars are shrinking faster than SG&amp;A can be cut.</p>
+            <p>Fixed ops is carrying it. At Group 1, parts and service was 13% of revenue and 45% of gross profit.</p>
+            <p><span class="slot">The role call</span>If you’re a Dealer Principal, the Q3 question isn’t how to sell more cars. It’s how much more your service drive can absorb before you run out of bays and techs.</p>
+            <p><span class="slot">The hand-off</span>Full breakdown on AutoTech Insights. Link in the comments.</p>
+          </div>
+        </div>
+        <div class="spec ink card45">
+          <div class="m kick" style="color:var(--b-mute-ink)">Q2 2026 · Seven public dealer groups</div>
+          <div class="above">Revenue grew at five of seven.</div>
+          <div class="rl"></div>
+          <div class="below">Profit fell at all seven.</div>
+          <div class="foot"><span class="mini-sig"><i></i>Jon Lamb</span><span class="m">Source · company filings</span></div>
+        </div>
+      </div>
+      <p class="note">Sample copy written for this playbook. “That’s not a demand problem” and the SG&amp;A sentence are lifted from the article.<sup class="c"><a href="#s1">1</a></sup></p>
+    </div>
+  </div>
+
+  <!-- T2 -->
+  <div class="tpl">
+    <div class="tpl-info">
+      <span class="mono">Template 2</span>
+      <h4>Data carousel</h4>
+      <p>The publication’s evidence, one number per slide. Jon signs the last slide, so the reader sees both voices in order.</p>
+      <dl>
+        <dt>Voice</dt><dd>Publication, then Jon on the close</dd>
+        <dt>Slides</dt><dd>6 at 1080 × 1350 (PDF document post)</dd>
+        <dt>Order</dt><dd>Line · above · below · mechanism · counterweight · watch list</dd>
+        <dt>Rule</dt><dd>One figure and one source per slide</dd>
+      </dl>
+    </div>
+    <div class="tpl-body">
+      <div class="slides">
+
+        <div class="spec paper slide">
+          <div class="m kick"><span>The Margin Mirage</span><span>1/6</span></div>
+          <div class="above" style="margin-top:auto;font-stretch:68%;font-weight:500;text-transform:uppercase;font-size:7.6cqw;line-height:1;color:var(--b-mute)">Revenue grew at five of seven.</div>
+          <div style="height:.75cqw;background:var(--b-signal);margin:4cqw 0"></div>
+          <div style="font-stretch:68%;font-weight:800;text-transform:uppercase;font-size:15.5cqw;line-height:.88">Profit fell at all seven.</div>
+          <div class="foot"><span class="mini-tick">ATI<i></i></span><span class="m">Q2 2026 · Swipe</span></div>
+        </div>
+
+        <div class="spec paper slide">
+          <div class="m kick"><span>Above the line</span><span>2/6</span></div>
+          <h5>Revenue: five of seven grew</h5>
+          <div class="rows" role="img" aria-label="Revenue change year over year. Sonic up 7.6 percent, CarMax up 6.2, Penske up 6.0, Lithia up 2.2, Asbury a small gain, AutoNation down, Group 1 down.">
+            <div class="rw two"><span>Sonic</span><span class="v">+7.6%</span><span class="dot"></span></div>
+            <div class="rw two"><span>CarMax</span><span class="v">+6.2%</span><span class="dot"></span></div>
+            <div class="rw two"><span>Penske</span><span class="v">+6.0%</span><span class="dot"></span></div>
+            <div class="rw two"><span>Lithia &amp; Driveway</span><span class="v">+2.2%</span><span class="dot"></span></div>
+            <div class="rw two"><span>Asbury</span><span class="st" style="text-align:right">small gain</span><span class="dot"></span></div>
+            <div class="rw two"><span>AutoNation</span><span class="st" style="text-align:right">down</span><span class="dot off"></span></div>
+            <div class="rw two"><span>Group 1</span><span class="st" style="text-align:right">down</span><span class="dot off"></span></div>
+          </div>
+          <div class="foot"><span class="mini-tick">ATI<i></i></span><span class="m">Revenue YoY · filings</span></div>
+        </div>
+
+        <div class="spec paper slide">
+          <div class="m kick"><span>One line down</span><span>3/6</span></div>
+          <h5>Profit: all seven fell</h5>
+          <div class="rows" role="img" aria-label="Adjusted net income change year over year. Sonic minus 23.5 percent, Group 1 minus 23.2, Asbury minus 14.6, CarMax minus 11.8, Penske minus 10.8, AutoNation minus 10.2, Lithia minus 5.5.">
+            <div class="rw"><span>Sonic</span><span><i class="bar" style="display:block;width:100%"></i></span><span class="v">−23.5%</span></div>
+            <div class="rw"><span>Group 1</span><span><i class="bar" style="display:block;width:98.7%"></i></span><span class="v">−23.2%</span></div>
+            <div class="rw"><span>Asbury</span><span><i class="bar" style="display:block;width:62.1%"></i></span><span class="v">−14.6%</span></div>
+            <div class="rw"><span>CarMax</span><span><i class="bar" style="display:block;width:50.2%"></i></span><span class="v">−11.8%</span></div>
+            <div class="rw"><span>Penske</span><span><i class="bar" style="display:block;width:46%"></i></span><span class="v">−10.8%</span></div>
+            <div class="rw"><span>AutoNation</span><span><i class="bar" style="display:block;width:43.4%"></i></span><span class="v">−10.2%</span></div>
+            <div class="rw"><span>Lithia</span><span><i class="bar" style="display:block;width:23.4%"></i></span><span class="v">−5.5%</span></div>
+          </div>
+          <div class="foot"><span class="mini-tick">ATI<i></i></span><span class="m">Adj. net income YoY · filings</span></div>
+        </div>
+
+        <div class="spec ink slide">
+          <div class="m kick"><span>The mechanism</span><span>4/6</span></div>
+          <h5>Gross profit is shrinking faster than SG&amp;A can be cut</h5>
+          <div style="margin-top:auto">
+            <div class="big num">−11<small>%</small></div>
+            <p class="dek" style="margin-top:3cqw">Combined adjusted net income, from about $1.07B to $951M. SG&amp;A-to-gross worsened by roughly 400 bp at Asbury and 370 bp at Sonic.</p>
+          </div>
+          <div class="foot"><span class="mini-tick">ATI<i></i></span><span class="m">Seven groups · Q2 2026</span></div>
+        </div>
+
+        <div class="spec ink slide">
+          <div class="m kick"><span>The counterweight</span><span>5/6</span></div>
+          <h5>Fixed ops is doing the heavy lifting</h5>
+          <div class="split" role="img" aria-label="Group 1 fixed operations: 13 percent of revenue and 45 percent of gross profit.">
+            <div class="share"><div class="lbl"><span>Share of revenue</span><b class="num">13%</b></div><div class="trk"><i style="width:13%"></i></div></div>
+            <div class="share"><div class="lbl"><span>Share of gross profit</span><b class="num">45%</b></div><div class="trk"><i style="width:45%"></i></div></div>
+          </div>
+          <div class="foot"><span class="mini-tick">ATI<i></i></span><span class="m">Group 1 · Q2 2026</span></div>
+        </div>
+
+        <div class="spec paper slide">
+          <div class="m kick"><span>What I’m watching into Q3</span><span>6/6</span></div>
+          <div class="watch">
+            <p><b>1</b><span>Whether fixed ops keeps absorbing the shock.</span></p>
+            <p><b>2</b><span>Whether SG&amp;A cuts catch up with gross profit.</span></p>
+            <p><b>3</b><span>How much captive-finance accounting distorts headline EPS.</span></p>
+          </div>
+          <div class="foot"><span class="mini-sig"><i></i>Jon Lamb</span><span class="m">autotechinsights.com</span></div>
+        </div>
+
+      </div>
+      <p class="note">Slide 2 shows figures only where the article gives them; it reports Asbury as a small gain and AutoNation and Group 1 as declines without percentages.<sup class="c"><a href="#s1">1</a></sup> Slide 3’s bars are drawn to scale against the largest decline. The watch list is Jon’s, shortened.</p>
+    </div>
+  </div>
+
+  <!-- T3 -->
+  <div class="tpl">
+    <div class="tpl-info">
+      <span class="mono">Template 3</span>
+      <h4>Newsletter header</h4>
+      <p>A fixed banner plus a fixed opening structure, so every issue starts the same way.</p>
+      <dl>
+        <dt>Voice</dt><dd>Publication, with Jon’s sign-off</dd>
+        <dt>Banner</dt><dd>1200 × 300, ink</dd>
+        <dt>Subject</dt><dd>The two-beat line, under 60 characters</dd>
+        <dt>Opens with</dt><dd>The line · One line down · What I’m watching</dd>
+      </dl>
+    </div>
+    <div class="tpl-body">
+      <div class="spec ink banner">
+        <div class="lock" style="flex-direction:row;align-items:center;gap:4cqw">
+          <div class="wm"><span class="a">AutoTech</span><span class="r"></span><span class="i">Insights</span></div>
+          <div class="sig" style="font-size:2.9cqw;gap:.9cqw"><span class="r" style="width:3cqw;height:.32cqw"></span><span>Jon Lamb</span></div>
+        </div>
+        <div class="right m"><b>31 Aug 2026</b><br>Q2 earnings<br>No pay-to-play</div>
+      </div>
+      <div class="mail">
+        <dl class="subj">
+          <dt>Subject</dt><dd><b>Revenue grew at five of seven. Profit fell at all seven.</b></dd>
+          <dt>Preview</dt><dd>What’s driving the squeeze, and why fixed ops can’t cover for it forever.</dd>
+        </dl>
+        <h5>The Margin Mirage: Why Every Public Dealer Group’s Profits Fell in Q2 2026</h5>
+        <div class="blk first"><span class="mono">The line</span><p>Top-line revenue looks fine. Sonic grew 7.6%, CarMax 6.2%, Penske 6.0%.</p></div>
+        <div class="blk"><span class="mono">One line down</span><p><b>All seven posted lower adjusted net income.</b> Combined, it fell about 11%, from roughly $1.07 billion to $951 million.</p></div>
+        <div class="blk"><span class="mono">What I’m watching</span><p class="voice" style="font-size:18px;line-height:1.35">Whether fixed ops keeps absorbing the shock, or whether service capacity becomes the ceiling on the one segment everyone is leaning on. <span style="white-space:nowrap">— Jon</span></p></div>
+      </div>
+      <p class="note">Title, preview text and figures are from the published article.<sup class="c"><a href="#s1">1</a></sup> The subject line and block labels are the template.</p>
+    </div>
+  </div>
+
+  <!-- T4 -->
+  <div class="tpl">
+    <div class="tpl-info">
+      <span class="mono">Template 4</span>
+      <h4>Article cover</h4>
+      <p>Replaces the per-post illustration. The left half names the pattern. The right half is the proof on greenbar.</p>
+      <dl>
+        <dt>Voice</dt><dd>Publication</dd>
+        <dt>Size</dt><dd>1456 × 816 (Substack), crops to 1200 × 630</dd>
+        <dt>Left</dt><dd>Coined phrase, dek, mark</dd>
+        <dt>Right</dt><dd>Two numbers split by the rule</dd>
+      </dl>
+    </div>
+    <div class="tpl-body">
+      <div class="spec paper cover">
+        <div class="l">
+          <div class="m kick">Q2 2026 earnings · Public dealer groups</div>
+          <h5>The Margin Mirage</h5>
+          <p class="dek">Why every public dealer group’s profits fell, and why fixed operations can’t cover for it forever.</p>
+          <div class="foot"><span class="mini-tick" style="color:var(--b-ink)">ATI<i></i></span><span class="m">autotechinsights.com · Source: company filings</span></div>
+        </div>
+        <div class="r">
+          <div class="m t">Revenue grew</div>
+          <div class="n1 num">5 OF 7</div>
+          <div class="rl"></div>
+          <div class="m t">Profit fell</div>
+          <div class="n2 num">7 OF 7</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub" style="margin-top:8px">
+    <h3>One topic, four surfaces</h3>
+    <div class="tbl-wrap">
+    <table class="ledger">
+      <thead><tr><th>Surface</th><th>Who speaks</th><th>What it carries</th><th>What it asks for</th></tr></thead>
+      <tbody>
+        <tr><td>Article cover</td><td>Publication</td><td>The coined phrase and the 5-of-7 / 7-of-7 split</td><td>Open the article</td></tr>
+        <tr><td>Newsletter header</td><td>Publication, signed by Jon</td><td>The two-beat subject line and the combined −11%</td><td>Read past the first screen</td></tr>
+        <tr><td>Data carousel</td><td>Publication, then Jon</td><td>The seven declines, the mechanism, fixed ops at 13% and 45%</td><td>Save it, send it to a GM</td></tr>
+        <tr><td>LinkedIn insight post</td><td>Jon</td><td>His judgment and one question for Dealer Principals</td><td>Argue in the comments, then click through</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── 5 · WHAT CHANGED ───────────── -->
+<section id="draft">
+  <div class="sec-head">
+    <h2>5 · What changed from the draft</h2>
+    <p>The Thermal Signal draft<sup class="c"><a href="#s13">13</a></sup> had good instincts and too many devices. This direction keeps the instincts and commits to one device that comes from the writing.</p>
+  </div>
+  <div class="grid g3">
+    <div class="item">
+      <span class="tag own">Kept</span>
+      <h4>Green, ink and paper</h4>
+      <p>Signal green is already the Substack accent, so readers know it. Real headlines and real figures as specimens. Mono labels. The “no pay-to-play” principle.</p>
+    </div>
+    <div class="item">
+      <span class="tag">Sharpened</span>
+      <h4>Strategy before style</h4>
+      <p>The draft opened with the tagline and a list of reader types. This opens with a position Jon can defend. Jon was an endorsement line; now he is a second voice with his own type and ground. Green is split so it passes contrast on paper.</p>
+    </div>
+    <div class="item">
+      <span class="tag">Dropped</span>
+      <h4>Scan, blur, facets and 20 patterns</h4>
+      <p>Thermal scans, blurred echoes, 45° cuts and twelve generators compete for attention, and none of them comes from Jon’s subject. Twelve sections became four. One rule replaces all of it.</p>
+    </div>
+  </div>
+  <p class="note">Next steps, if this direction is right: outline the three marks as vectors, shoot the portrait set, build the four templates in Figma or Canva with locked rule and margins, then update the Substack accent, descriptor and About copy in one pass.</p>
+</section>
+
+<!-- ───────────── SOURCES ───────────── -->
+<section id="sources" style="border-bottom:0">
+  <div class="sec-head">
+    <h2>Sources</h2>
+    <p>Everything quoted above, read between 12 and 18 November 2026. Reaction counts are as shown on the day of reading.</p>
+  </div>
+  <ol class="src">
+    <li id="s1"><b>1</b><div><a href="https://www.autotechinsights.com/p/the-margin-mirage-why-every-public">The Margin Mirage: Why Every Public Dealer Group’s Profits Fell in Q2 2026</a> <span>· AutoTech Insights, 31 Aug 2026</span></div></li>
+    <li id="s2"><b>2</b><div><a href="https://www.autotechinsights.com/p/the-connected-car-is-not-the-story">The Connected Car Is Not the Story. Control Is.</a> <span>· AutoTech Insights, 30 Mar 2026</span></div></li>
+    <li id="s3"><b>3</b><div><a href="https://www.autotechinsights.com/p/you-bought-the-tool-you-skipped-the">You Bought the Tool. You Skipped the Point.</a> <span>· AutoTech Insights, 18 Feb 2026</span></div></li>
+    <li id="s4"><b>4</b><div><a href="https://www.autotechinsights.com/p/before-ai-agents-there-were-algorithms">Before AI Agents, There Were Algorithms</a> <span>· AutoTech Insights, 19 May 2026</span></div></li>
+    <li id="s5"><b>5</b><div><a href="https://www.autotechinsights.com/p/ecosystems-cars">Ecosystems &gt; Cars</a> <span>· AutoTech Insights, 1 Jun 2026</span></div></li>
+    <li id="s6"><b>6</b><div><a href="https://www.autotechinsights.com/">AutoTech Insights home page</a> <span>· title, descriptor, accent colour, most-popular list including the 2023 headlines</span></div></li>
+    <li id="s7"><b>7</b><div><a href="https://www.autotechinsights.com/about">AutoTech Insights About page</a> <span>· coverage, audience, “not a pay-to-play publication”</span></div></li>
+    <li id="s8"><b>8</b><div><a href="https://www.linkedin.com/in/mrjonlamb/">Jon Lamb on LinkedIn</a> <span>· headline, About, experience (profile data snapshot, 12 Nov 2026)</span></div></li>
+    <li id="s9"><b>9</b><div><a href="https://www.linkedin.com/posts/mrjonlamb_connectivity-has-evolved-from-being-a-differentiator-activity-7444485078333857792-yCA0">LinkedIn post: “Connectivity has evolved from being a differentiator…”</a> <span>· 30 Mar 2026 · 29 reactions, 17 comments, 5 reposts</span></div></li>
+    <li id="s10"><b>10</b><div><a href="https://www.linkedin.com/posts/mrjonlamb_github-mrjonlambdms-identity-resolution-attribution-activity-7462525012097511424-uQGs">LinkedIn post: “Trust your media buys? Don’t.”</a> <span>· 19 May 2026 · 15 reactions, 10 comments, 3 reposts</span></div></li>
+    <li id="s11"><b>11</b><div><a href="https://www.linkedin.com/posts/mrjonlamb_navigating-margin-compression-in-north-american-activity-7216123877821689857-hVgw">LinkedIn post: Navigating margin compression in North American auto retail</a> <span>· 8 Jul 2024</span></div></li>
+    <li id="s12"><b>12</b><div><a href="https://www.linkedin.com/posts/mrjonlamb_semashow-automotivetechnology-gps-activity-7523500173474566144-PSXv">LinkedIn post: “Heading to SEMA?”</a> <span>· 3 Nov 2026</span></div></li>
+    <li id="s13"><b>13</b><div><a href="https://autotech-insights-brand.vercel.app/">AutoTech Insights × Jon Lamb brand guidelines, “Thermal Signal”</a> <span>· the starting draft, v1.0, Nov 2026</span></div></li>
+  </ol>
+</section>
+
+<footer>
+  <p>Also read for voice, not quoted: a February 2024 LinkedIn post on the 2024 market. Specimens on this page are set in live web type; production assets should be exported from outlined vectors.</p>
+</footer>
+
+</div>
