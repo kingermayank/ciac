@@ -92,14 +92,32 @@ if (fw) {
 
 /* ---------- ramp swatches: the same 45 degree screen, drawn once on a 2D canvas ---------- */
 const STOPS = [[[11, 13, 16], [14, 59, 38], [31, 157, 85], [230, 244, 199], [.40, .74]], [[243, 243, 240], [230, 244, 199], [31, 157, 85], [14, 59, 38], [.34, .72]]];
-const rampCol = (mode, f) => { const [a, b, d, e, [s1, s2]] = STOPS[mode]; const mx = (p, q, t) => p.map((v, i) => Math.round(v + (q[i] - v) * t));
-  const c = f < s1 ? mx(a, b, f / s1) : f < s2 ? mx(b, d, (f - s1) / (s2 - s1)) : mx(d, e, (f - s2) / (1 - s2)); return 'rgb(' + c + ')'; };
+const rampRGB = (mode, f) => { const [a, b, d, e, [s1, s2]] = STOPS[mode]; const mx = (p, q, t) => p.map((v, i) => Math.round(v + (q[i] - v) * t));
+  return f < s1 ? mx(a, b, f / s1) : f < s2 ? mx(b, d, (f - s1) / (s2 - s1)) : mx(d, e, (f - s2) / (1 - s2)); };
 const drawRamp = cv => { const mode = +cv.dataset.ramp, r = cv.getBoundingClientRect(); if (!r.width) return; const dpr = Math.min(devicePixelRatio || 1, 2);
   cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); const x = cv.getContext('2d'), W = cv.width, H = cv.height, c = 5 * dpr * Math.SQRT2;
-  x.fillStyle = rampCol(mode, 0); x.fillRect(0, 0, W, H);
+  x.fillStyle = 'rgb(' + rampRGB(mode, 0) + ')'; x.fillRect(0, 0, W, H);
   for (let j = -1; j * c / 2 < H + c; j++) for (let i = -1; i * c < W + c; i++) { const px = i * c + (j & 1) * c / 2, py = j * c / 2, v = Math.min(1, Math.max(0, px / W));
-    const h = c / 2 * Math.sqrt(Math.pow(v, .85)) * 1.02; if (h < .3) continue; x.fillStyle = rampCol(mode, Math.min(1, v * .96 + .04)); x.beginPath(); x.moveTo(px, py - h); x.lineTo(px + h, py); x.lineTo(px, py + h); x.lineTo(px - h, py); x.fill(); } };
+    const h = c / 2 * Math.sqrt(Math.pow(v, .85)) * 1.02; if (h < .3) continue; x.fillStyle = 'rgb(' + rampRGB(mode, Math.min(1, v * .96 + .04)) + ')'; x.beginPath(); x.moveTo(px, py - h); x.lineTo(px + h, py); x.lineTo(px, py + h); x.lineTo(px - h, py); x.fill(); } };
 $$('canvas[data-ramp]').forEach(cv => { drawRamp(cv); new ResizeObserver(() => drawRamp(cv)).observe(cv); });
+
+/* ---------- photography: a portrait read through the ramp, as a duotone or through the 45 degree screen ---------- */
+const photoData = (img, w, h, fy) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+  const k = Math.max(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * k, dh = img.naturalHeight * k;
+  x.imageSmoothingQuality = 'high'; x.drawImage(img, (w - dw) / 2, (h - dh) * fy, dw, dh); return x.getImageData(0, 0, w, h).data; };
+const tone = (d, i) => Math.pow(Math.min(1, Math.max(0, ((d[i] * .2126 + d[i + 1] * .7152 + d[i + 2] * .0722) / 255 - .16) / .66)), 1.08);
+const drawPhoto = (cv, img) => { const mode = +(cv.dataset.mode || 0), r = cv.getBoundingClientRect(); if (!r.width || !img.naturalWidth) return;
+  const dpr = Math.min(devicePixelRatio || 1, 2), W = cv.width = Math.round(r.width * dpr), H = cv.height = Math.round(r.height * dpr), x = cv.getContext('2d'), fy = +(cv.dataset.fy || .5);
+  if (cv.dataset.treat === 'duo') { const d = photoData(img, W, H, fy), vg = +(cv.dataset.vig || .78), out = x.createImageData(W, H), lut = Array.from({ length: 256 }, (_, i) => rampRGB(mode, mode ? 1 - i / 255 * .96 : i / 255 * .97 + .03));
+    for (let i = 0; i < d.length; i += 4) { const q = i / 4, dx = (q % W) / W - .5, dy = Math.floor(q / W) / H - (fy * .3 + .33), k = 1 - vg * Math.min(1, Math.max(0, (Math.hypot(dx, dy * .9) - .3) / .34)); const tv = tone(d, i); const c = lut[Math.round((mode ? 1 - (1 - tv) * k : tv * k) * 255)]; out.data[i] = c[0]; out.data[i + 1] = c[1]; out.data[i + 2] = c[2]; out.data[i + 3] = 255; } x.putImageData(out, 0, 0); return; }
+  const c = (+cv.dataset.cell || 5) * dpr * Math.SQRT2, hc = c / 2, sw = Math.ceil(W / hc) + 2, sh = Math.ceil(H / hc) + 2, d = photoData(img, sw, sh, fy);
+  x.fillStyle = 'rgb(' + rampRGB(mode, 0) + ')'; x.fillRect(0, 0, W, H);
+  for (let j = 0; j < sh; j++) for (let i = 0; i * c < W + c; i++) { const px = i * c + (j & 1) * hc, py = j * hc, sx = Math.min(sw - 1, Math.round(px / hc)), v = tone(d, (j * sw + sx) * 4), vg = +(cv.dataset.vig || .78), kk = 1 - vg * Math.min(1, Math.max(0, (Math.hypot(px / W - .5, (py / H - (fy * .3 + .33)) * .9) - .3) / .34)), t = (mode ? 1 - v : v) * kk;
+    const h = hc * Math.sqrt(t) * 1.03; if (h < .35) continue; x.fillStyle = 'rgb(' + rampRGB(mode, Math.min(1, t * .9 + .1)) + ')'; x.beginPath(); x.moveTo(px, py - h); x.lineTo(px + h, py); x.lineTo(px, py + h); x.lineTo(px - h, py); x.fill(); } };
+const photoImgs = {};
+$$('canvas[data-photo]').forEach(cv => { const src = cv.dataset.photo; const im = photoImgs[src] || (photoImgs[src] = Object.assign(new Image(), { src }));
+  const go = () => { drawPhoto(cv, im); new ResizeObserver(() => drawPhoto(cv, im)).observe(cv); }; im.complete && im.naturalWidth ? go() : im.addEventListener('load', go); });
+window.ATIPhoto = { drawPhoto };
 
 /* ---------- WebGL signal scan ---------- */
 const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
