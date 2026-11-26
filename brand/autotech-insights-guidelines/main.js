@@ -106,14 +106,22 @@ const photoData = (img, w, h, fy) => { const c = document.createElement('canvas'
   const k = Math.max(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * k, dh = img.naturalHeight * k;
   x.imageSmoothingQuality = 'high'; x.drawImage(img, (w - dw) / 2, (h - dh) * fy, dw, dh); return x.getImageData(0, 0, w, h).data; };
 const tone = (d, i) => Math.pow(Math.min(1, Math.max(0, ((d[i] * .2126 + d[i + 1] * .7152 + d[i + 2] * .0722) / 255 - .16) / .66)), 1.08);
+const PHC = { ink: [11, 13, 16], paper: [243, 243, 240], deep: [14, 59, 38] };
+const mix3 = (p, q, t) => [Math.round(p[0] + (q[0] - p[0]) * t), Math.round(p[1] + (q[1] - p[1]) * t), Math.round(p[2] + (q[2] - p[2]) * t)];
+/* portraits stay neutral: ink to paper on dark, paper to ink on light. Green only enters the ground at the edge of the vignette, never the face. */
+const photoGround = (mode, e) => mode ? PHC.paper : mix3(PHC.ink, PHC.deep, e * .9);
+const photoRGB = (mode, t, e) => mode ? mix3(PHC.paper, PHC.ink, t * .94) : mix3(photoGround(0, e), PHC.paper, t);
 const drawPhoto = (cv, img) => { const mode = +(cv.dataset.mode || 0), r = cv.getBoundingClientRect(); if (!r.width || !img.naturalWidth) return;
   const dpr = Math.min(devicePixelRatio || 1, 2), W = cv.width = Math.round(r.width * dpr), H = cv.height = Math.round(r.height * dpr), x = cv.getContext('2d'), fy = +(cv.dataset.fy || .5);
-  if (cv.dataset.treat === 'duo') { const d = photoData(img, W, H, fy), vg = +(cv.dataset.vig || .78), out = x.createImageData(W, H), lut = Array.from({ length: 256 }, (_, i) => rampRGB(mode, mode ? 1 - i / 255 * .96 : i / 255 * .97 + .03));
-    for (let i = 0; i < d.length; i += 4) { const q = i / 4, dx = (q % W) / W - .5, dy = Math.floor(q / W) / H - (fy * .3 + .33), k = 1 - vg * Math.min(1, Math.max(0, (Math.hypot(dx, dy * .9) - .3) / .34)); const tv = tone(d, i); const c = lut[Math.round((mode ? 1 - (1 - tv) * k : tv * k) * 255)]; out.data[i] = c[0]; out.data[i + 1] = c[1]; out.data[i + 2] = c[2]; out.data[i + 3] = 255; } x.putImageData(out, 0, 0); return; }
+  const vg = +(cv.dataset.vig || .8), cy = fy * .3 + .33, edge = (nx, ny) => Math.min(1, Math.max(0, (Math.hypot(nx - .5, (ny - cy) * .9) - .3) / .34));
+  if (cv.dataset.treat === 'mono') { const d = photoData(img, W, H, fy), out = x.createImageData(W, H);
+    for (let i = 0; i < d.length; i += 4) { const q = i / 4, e = edge((q % W) / W, Math.floor(q / W) / H), tv = tone(d, i), c = photoRGB(mode, (mode ? 1 - tv : tv) * (1 - vg * e), e);
+      out.data[i] = c[0]; out.data[i + 1] = c[1]; out.data[i + 2] = c[2]; out.data[i + 3] = 255; } x.putImageData(out, 0, 0); return; }
   const c = (+cv.dataset.cell || 5) * dpr * Math.SQRT2, hc = c / 2, sw = Math.ceil(W / hc) + 2, sh = Math.ceil(H / hc) + 2, d = photoData(img, sw, sh, fy);
-  x.fillStyle = 'rgb(' + rampRGB(mode, 0) + ')'; x.fillRect(0, 0, W, H);
-  for (let j = 0; j < sh; j++) for (let i = 0; i * c < W + c; i++) { const px = i * c + (j & 1) * hc, py = j * hc, sx = Math.min(sw - 1, Math.round(px / hc)), v = tone(d, (j * sw + sx) * 4), vg = +(cv.dataset.vig || .78), kk = 1 - vg * Math.min(1, Math.max(0, (Math.hypot(px / W - .5, (py / H - (fy * .3 + .33)) * .9) - .3) / .34)), t = (mode ? 1 - v : v) * kk;
-    const h = hc * Math.sqrt(t) * 1.03; if (h < .35) continue; x.fillStyle = 'rgb(' + rampRGB(mode, Math.min(1, t * .9 + .1)) + ')'; x.beginPath(); x.moveTo(px, py - h); x.lineTo(px + h, py); x.lineTo(px, py + h); x.lineTo(px - h, py); x.fill(); } };
+  if (mode) { x.fillStyle = 'rgb(' + PHC.paper + ')'; x.fillRect(0, 0, W, H); }
+  else { const g = x.createRadialGradient(W * .5, H * cy, W * .3, W * .5, H * cy, Math.max(W, H) * .66); g.addColorStop(0, 'rgb(' + photoGround(0, 0) + ')'); g.addColorStop(1, 'rgb(' + photoGround(0, 1) + ')'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
+  for (let j = 0; j < sh; j++) for (let i = 0; i * c < W + c; i++) { const px = i * c + (j & 1) * hc, py = j * hc, sx = Math.min(sw - 1, Math.round(px / hc)), e = edge(px / W, py / H), v = tone(d, (j * sw + sx) * 4), t = (mode ? 1 - v : v) * (1 - vg * e);
+    const h = hc * Math.sqrt(t) * 1.03; if (h < .35) continue; x.fillStyle = 'rgb(' + photoRGB(mode, Math.min(1, t * .88 + .12), e) + ')'; x.beginPath(); x.moveTo(px, py - h); x.lineTo(px + h, py); x.lineTo(px, py + h); x.lineTo(px - h, py); x.fill(); } };
 const photoImgs = {};
 $$('canvas[data-photo]').forEach(cv => { const src = cv.dataset.photo; const im = photoImgs[src] || (photoImgs[src] = Object.assign(new Image(), { src }));
   const go = () => { drawPhoto(cv, im); new ResizeObserver(() => drawPhoto(cv, im)).observe(cv); }; im.complete && im.naturalWidth ? go() : im.addEventListener('load', go); });
