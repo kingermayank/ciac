@@ -507,3 +507,18 @@ section.s{padding:clamp(72px,9vw,140px) 0}
 .focus-stage .e2{filter:blur(60px);opacity:.5;transform:translate(.14em,.18em)}
 .focus-stage .focus-meter{left:18px;right:18px;bottom:16px}
 @media (max-width:760px){.focus-stage{aspect-ratio:4/3}.focus-stage .focus-meter{display:none}.focus-stage .focus-demo .cap{flex-direction:column;gap:4px}}
+
+/* ---------- v1.2: signal scan texture — sensor screen, isotherms, layer anatomy ---------- */
+.ramp canvas{position:absolute;inset:0;width:100%;height:100%}
+.scan-stage .iso{position:absolute;inset:0;pointer-events:none;color:var(--pale);font-size:10.5px;letter-spacing:.06em}
+.scan-stage .iso[data-mode="1"]{color:var(--deep)}
+.scan-stage .iso span{position:absolute;top:50%;transform:translate(9px,-50%);opacity:.8;white-space:nowrap}
+.scan-stage .iso span i{position:absolute;left:-12px;top:50%;width:6px;height:6px;margin-top:-3px;background:currentColor;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.layers{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--g)}
+.layers figure{margin:0}
+.layers .lay{position:relative;aspect-ratio:4/3;background:var(--ink);overflow:hidden;outline:1px solid var(--rule);outline-offset:-1px}
+.layers .lay canvas{position:absolute;inset:0;width:100%;height:100%}
+.layers .lay span{position:absolute;left:14px;top:12px;opacity:.7}
+.layers figcaption{margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);font-size:15px;line-height:1.45;color:rgba(255,255,255,.74)}
+.layers figcaption b{display:block;font-weight:500;font-size:17px;letter-spacing:-.015em;margin-bottom:4px;color:var(--white)}
+@media (max-width:760px){.layers{grid-template-columns:1fr}.scan-stage .iso{display:none}}

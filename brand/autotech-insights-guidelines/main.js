@@ -90,10 +90,21 @@ if (fw) {
   addEventListener('scroll', () => requestAnimationFrame(upd), { passive: true }); upd();
 }
 
+/* ---------- ramp swatches: the same 45 degree screen, drawn once on a 2D canvas ---------- */
+const STOPS = [[[11, 13, 16], [14, 59, 38], [31, 157, 85], [230, 244, 199], [.40, .74]], [[243, 243, 240], [230, 244, 199], [31, 157, 85], [14, 59, 38], [.34, .72]]];
+const rampCol = (mode, f) => { const [a, b, d, e, [s1, s2]] = STOPS[mode]; const mx = (p, q, t) => p.map((v, i) => Math.round(v + (q[i] - v) * t));
+  const c = f < s1 ? mx(a, b, f / s1) : f < s2 ? mx(b, d, (f - s1) / (s2 - s1)) : mx(d, e, (f - s2) / (1 - s2)); return 'rgb(' + c + ')'; };
+const drawRamp = cv => { const mode = +cv.dataset.ramp, r = cv.getBoundingClientRect(); if (!r.width) return; const dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); const x = cv.getContext('2d'), W = cv.width, H = cv.height, c = 5 * dpr * Math.SQRT2;
+  x.fillStyle = rampCol(mode, 0); x.fillRect(0, 0, W, H);
+  for (let j = -1; j * c / 2 < H + c; j++) for (let i = -1; i * c < W + c; i++) { const px = i * c + (j & 1) * c / 2, py = j * c / 2, v = Math.min(1, Math.max(0, px / W));
+    const h = c / 2 * Math.sqrt(Math.pow(v, .85)) * 1.02; if (h < .3) continue; x.fillStyle = rampCol(mode, Math.min(1, v * .96 + .04)); x.beginPath(); x.moveTo(px, py - h); x.lineTo(px + h, py); x.lineTo(px, py + h); x.lineTo(px - h, py); x.fill(); } };
+$$('canvas[data-ramp]').forEach(cv => { drawRamp(cv); new ResizeObserver(() => drawRamp(cv)).observe(cv); });
+
 /* ---------- WebGL signal scan ---------- */
 const VS = `attribute vec2 p;varying vec2 v;void main(){v=p*.5+.5;gl_Position=vec4(p,0.,1.);}`;
 const FS = `precision highp float;varying vec2 v;
-uniform sampler2D uN,uF;uniform vec2 uR,uNs,uFs,uM;uniform float uT,uMA,uMode,uG,uH,uBand;
+uniform sampler2D uN,uF,uW;uniform vec2 uR,uNs,uFs,uWs,uM;uniform float uT,uMA,uMode,uG,uH,uBand,uStyle,uCell,uLayer;
 float h(vec2 p){return fract(sin(dot(p,vec2(12.9898,78.233)))*43758.5453);}
 float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
 float bl(sampler2D t,vec2 u,vec2 px){float s=0.;for(int i=-1;i<=1;i++)for(int j=-1;j<=1;j++){float w=(i==0&&j==0)?4.:(i==0||j==0)?2.:1.;s+=w*texture2D(t,u+vec2(float(i),float(j))*px).r;}return s/16.;}
@@ -103,30 +114,53 @@ vec3 ramp(float f){
   if(f<.40)return mix(a,b,f/.40); if(f<.74)return mix(b,d,(f-.40)/.34); return mix(d,e,(f-.74)/.26);}
  vec3 a=c(243.,243.,240.),b=c(230.,244.,199.),d=c(31.,157.,85.),e=c(14.,59.,38.);
  if(f<.34)return mix(a,b,f/.34); if(f<.72)return mix(b,d,(f-.34)/.38); return mix(d,e,(f-.72)/.28);}
-void main(){
- vec2 u=vec2(v.x,1.-v.y); float asp=uR.x/uR.y; vec2 q=vec2(u.x*asp,u.y);
+float gNear,gHalo;
+float heat(vec2 u){
+ float asp=uR.x/uR.y; vec2 q=vec2(u.x*asp,u.y);
  float near=bl(uN,u,1.4/uNs); float far=bl(uF,u,1.5/uFs); float vfar=bl(uF,u,5./uFs);
  float amb=n2(q*2.2+vec2(uT*.03,-uT*.02))*.6+n2(q*5.3-vec2(uT*.025,uT*.04))*.4;
- float rim=clamp(near-far*.85,0.,1.)*1.9;
+ float rim=clamp(near-far*.85,0.,1.)*1.9; float wide=bl(uW,u,1.2/uWs); gNear=near; gHalo=wide;
  vec2 m=vec2(uM.x*asp,uM.y); float d=distance(q,m); float glow=exp(-d*d/.045)*uMA;
  float bx=fract(uT*.045)*1.8-.4; float band=exp(-pow((u.x-bx-(u.y-.5)*.25)*7.,2.))*uBand;
- float f=.02+.11*uH*amb+.34*vfar-.06*near+.78*rim+(.30*glow+.16*band)*(.35+far*1.4)+.10*glow*uH;
- f+=(h(gl_FragCoord.xy+fract(uT*7.)*91.)-.5)*uG*2.;
- vec3 col=ramp(clamp(f,0.,1.))*(1.+(h(gl_FragCoord.xy*1.37+fract(uT*3.))-.5)*.07);
- gl_FragColor=vec4(col,1.);}`;
-let MARKS = null;
-const marksP = fetch('img/marks.json').then(r => r.json()).then(m => (MARKS = m));
+ return .02+.11*uH*amb+.30*vfar+.17*wide-.06*near+.78*rim+(.30*glow+.16*band)*(.35+far*1.4)+.10*glow*uH;}
+void main(){
+ vec2 u=vec2(v.x,1.-v.y); float f=heat(u); float nearv=gNear,halo=gHalo;
+ float gr=h(gl_FragCoord.xy*1.37+fract(uT*3.))-.5;
+ if(uStyle<.5){
+  f+=(h(gl_FragCoord.xy+fract(uT*7.)*91.)-.5)*uG*2.;
+  gl_FragColor=vec4(ramp(clamp(f,0.,1.))*(1.+gr*.07),1.); return;}
+ vec2 px=vec2(gl_FragCoord.x,uR.y-gl_FragCoord.y);
+ const float s=.70710678; mat2 R=mat2(s,-s,s,s); mat2 Ri=mat2(s,s,-s,s);
+ vec2 g=R*px/uCell; vec2 id=floor(g); vec2 cc=fract(g)-.5;
+ float fc=clamp(heat((Ri*((id+.5)*uCell))/uR),0.,1.);
+ float r=.53*sqrt(pow(clamp((fc-.022)/.74,0.,1.),.85));
+ float aa=1.1/uCell; float dotm=1.-smoothstep(r-aa,r+aa,max(abs(cc.x),abs(cc.y)));
+ vec3 bg=ramp(clamp(f*.40,0.,1.)); vec3 fg=ramp(clamp(fc*1.04+.19,0.,1.));
+ if(uLayer>1.5)bg=ramp(0.);
+ vec3 col=(uLayer>.5&&uLayer<1.5)?ramp(clamp(f*.62,0.,1.)):mix(bg,fg,dotm);
+#ifdef ISO
+ if(uLayer<1.5){float w=fwidth(halo)*.8+1e-5; float iso=0.;
+  iso=max(iso,1.-smoothstep(.5,1.,abs(halo-.52)/w));
+  iso=max(iso,(1.-smoothstep(.5,1.,abs(halo-.30)/w))*.85);
+  iso=max(iso,(1.-smoothstep(.5,1.,abs(halo-.14)/w))*.7);
+  iso=max(iso,(1.-smoothstep(.5,1.,abs(halo-.045)/w))*.55);
+  float off=1.-smoothstep(.02,.25,nearv);
+  col=mix(col,ramp(.93),iso*off*(uLayer>.5?.6:.34));}
+#endif
+ gl_FragColor=vec4(col*(1.+gr*(.025+uG*.55)),1.);}`;
+let MARKS = null; let ScanClass = null;
+const marksP = fetch('img/marks.json').then(r => r.json()).then(m => (MARKS = Object.assign(m, { bar: { b: [0, 0, 10, 100], d: 'M0 0H10V100H0Z' }, chev: { b: [0, 0, 60, 100], d: 'M0 0L22 0L60 50L22 100L0 100L38 50Z' } })));
 
 class Scan {
   constructor(cv, o) {
-    this.cv = cv; this.o = Object.assign({ mode: 0, grain: .06, heat: .55, band: 1 }, o);
-    const gl = cv.getContext('webgl', { antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: true }); if (!gl) throw 0; this.gl = gl;
+    this.cv = cv; this.o = Object.assign({ mode: 0, grain: .06, heat: .55, band: 1, style: 1, cell: 5, layer: 0 }, o);
+    const gl = cv.getContext('webgl', { antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: true }); if (!gl) throw 0; this.gl = gl; this.ext = gl.getExtension('OES_standard_derivatives');
     const sh = (t, s) => { const x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(x); return x; };
-    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(pr); gl.useProgram(pr); this.pr = pr;
+    const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, (this.ext ? '#extension GL_OES_standard_derivatives : enable\n#define ISO\n' : '') + FS)); gl.linkProgram(pr); gl.useProgram(pr); this.pr = pr;
     const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    this.U = {}; ['uN', 'uF', 'uR', 'uNs', 'uFs', 'uM', 'uT', 'uMA', 'uMode', 'uG', 'uH', 'uBand'].forEach(k => this.U[k] = gl.getUniformLocation(pr, k));
-    this.tN = this.tex(); this.tF = this.tex();
+    this.U = {}; ['uN', 'uF', 'uW', 'uR', 'uNs', 'uFs', 'uWs', 'uM', 'uT', 'uMA', 'uMode', 'uG', 'uH', 'uBand', 'uStyle', 'uCell', 'uLayer'].forEach(k => this.U[k] = gl.getUniformLocation(pr, k));
+    this.tN = this.tex(); this.tF = this.tex(); this.tW = this.tex();
     this.m = [.7, .5]; this.mt = [.7, .5]; this.ma = 0; this.mat = 0; this.t = 0; this.vis = false;
     const pm = e => { const r = cv.getBoundingClientRect(); this.mt = [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; this.mat = 1; if (reduced()) this.frame(); };
     (o.track || cv).addEventListener('pointermove', pm, { passive: true });
@@ -145,21 +179,26 @@ class Scan {
     const draw = (k) => { const s = Math.max(8, Math.round(W / k)), sh = Math.max(8, Math.round(H / k)); const c = document.createElement('canvas'); c.width = s; c.height = sh; const x = c.getContext('2d');
       x.fillStyle = '#000'; x.fillRect(0, 0, s, sh); x.fillStyle = '#fff';
       for (const p of this.o.place(W, H)) { const mk = MARKS[p.mark]; const [x0, y0, x1, y1] = mk.b; const sc = p.w / (x1 - x0) / k;
-        x.save(); x.translate(p.x / k, p.y / k); x.scale(sc, sc); x.translate(-x0, -y0); x.fill(new Path2D(mk.d)); x.restore(); }
+        x.save(); x.globalAlpha = p.a == null ? 1 : p.a; x.translate(p.x / k, p.y / k); x.scale(sc, sc); x.translate(-x0, -y0); x.fill(new Path2D(mk.d)); x.restore(); }
       return c; };
-    const n = draw(4), f = draw(18);
+    const n = draw(3), f = draw(18);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, this.tN); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, n);
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, this.tF); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, f);
-    this.ns = [n.width, n.height]; this.fs = [f.width, f.height];
+    /* a wide, smooth halo field: shrink the far mask twice, then grow it back in steps */
+    const rs = (src, w, h) => { const c = document.createElement('canvas'); c.width = Math.max(4, Math.round(w)); c.height = Math.max(4, Math.round(h)); const x = c.getContext('2d'); x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high'; x.fillStyle = '#000'; x.fillRect(0, 0, c.width, c.height); x.drawImage(src, 0, 0, c.width, c.height); return c; };
+    let wd = rs(rs(rs(f, f.width / 2, f.height / 2), f.width / 4, f.height / 4), f.width / 7, f.height / 7);
+    wd = rs(rs(rs(wd, f.width / 4, f.height / 4), f.width / 2, f.height / 2), f.width, f.height);
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, this.tW); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, wd);
+    this.ns = [n.width, n.height]; this.fs = [f.width, f.height]; this.ws = [wd.width, wd.height]; this.wd = wd; this.o.onMasks && this.o.onMasks(this);
   }
   frame() {
     const gl = this.gl, U = this.U; if (!this.ns) return;
     gl.viewport(0, 0, this.cv.width, this.cv.height);
-    gl.uniform1i(U.uN, 0); gl.uniform1i(U.uF, 1);
+    gl.uniform1i(U.uN, 0); gl.uniform1i(U.uF, 1); gl.uniform1i(U.uW, 2); gl.uniform2fv(U.uWs, this.ws);
     gl.uniform2f(U.uR, this.cv.width, this.cv.height); gl.uniform2fv(U.uNs, this.ns); gl.uniform2fv(U.uFs, this.fs);
     gl.uniform2fv(U.uM, this.m); gl.uniform1f(U.uMA, this.ma); gl.uniform1f(U.uT, this.t);
-    gl.uniform1f(U.uMode, this.o.mode); gl.uniform1f(U.uG, this.o.grain); gl.uniform1f(U.uH, this.o.heat); gl.uniform1f(U.uBand, reduced() ? 0 : this.o.band);
+    gl.uniform1f(U.uMode, this.o.mode); gl.uniform1f(U.uG, this.o.grain); gl.uniform1f(U.uH, this.o.heat); gl.uniform1f(U.uBand, reduced() ? 0 : this.o.band); gl.uniform1f(U.uStyle, this.o.style); gl.uniform1f(U.uCell, this.o.cell * this.cv.width / this.W); gl.uniform1f(U.uLayer, this.o.layer);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   loop() {
@@ -179,6 +218,8 @@ class Scan {
   set(o) { Object.assign(this.o, o); this.masks(); this.frame(); }
 }
 
+window.ATIScan = { ready: marksP, get Scan() { return ScanClass; }, get MARKS() { return MARKS; } };
+ScanClass = Scan;
 marksP.then(() => {
   try {
     const hero = $('#heroScan');
@@ -189,11 +230,17 @@ marksP.then(() => {
     const sc = $('#scanCanvas'); let mark = 'ati';
     const place = (W, H) => { const mk = MARKS[mark]; const [x0, y0, x1, y1] = mk.b; const ar = (y1 - y0) / (x1 - x0);
       let w = Math.min(W * (mark === 'jl' ? 0.42 : 0.74), H * 0.66 / ar); return [{ mark, w, x: (W - w) / 2, y: (H - w * ar) / 2 }]; };
-    const s = new Scan(sc, { place, heat: .55, grain: .06 }); s.resize();
+    /* isotherm read-outs: where the halo field crosses each level on the row through the middle */
+    const isoBox = $('#isoLabels');
+    const onMasks = t => { if (!isoBox || !t.wd) return; const w = t.wd.width, hh = t.wd.height, row = t.wd.getContext('2d').getImageData(0, Math.floor(hh / 2), w, 1).data;
+      isoBox.innerHTML = [.30, .14, .045].map(L => { let x = w - 1; while (x > 0 && row[x * 4] / 255 < L) x--; return x > 0 && x < w - 2 ? '<span style="left:' + ((x + .5) / w * 100).toFixed(2) + '%"><i></i>' + String(L).replace(/^0/, '') + '</span>' : ''; }).join(''); };
+    const s = new Scan(sc, { place, heat: .55, grain: .06, onMasks }); s.resize();
     const lab = $('#scanLabel'); let mode = 0;
-    const L = () => { lab.textContent = `${mark === 'wm' ? 'wordmark' : mark} · ${mode ? 'light' : 'dark'} ramp`; $('#scanStage').style.background = mode ? '#F3F3F0' : '#0B0D10'; $('#scanStage .hud').style.color = mode ? '#0B0D10' : '#fff'; };
+    const L = () => { if (isoBox) isoBox.dataset.mode = mode; lab.textContent = `${mark === 'wm' ? 'wordmark' : mark} · ${mode ? 'light' : 'dark'} ramp`; $('#scanStage').style.background = mode ? '#F3F3F0' : '#0B0D10'; $('#scanStage .hud').style.color = mode ? '#0B0D10' : '#fff'; };
     $$('[data-mark]').forEach(b => b.addEventListener('click', () => { mark = b.dataset.mark; $$('[data-mark]').forEach(x => x.setAttribute('aria-pressed', x === b)); s.set({}); L(); }));
     $$('[data-mode]').forEach(b => b.addEventListener('click', () => { mode = +b.dataset.mode; $$('[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b)); s.set({ mode }); L(); }));
+    $$('[data-style]').forEach(b => b.addEventListener('click', () => { $$('[data-style]').forEach(x => x.setAttribute('aria-pressed', x === b)); s.set({ style: +b.dataset.style }); }));
+    $$('canvas[data-layer]').forEach(cv => { const t = new Scan(cv, { layer: +cv.dataset.layer, band: 0, heat: .6, cell: 4, place: (W, H) => { const mk = MARKS.ati, ar = (mk.b[3] - mk.b[1]) / (mk.b[2] - mk.b[0]); const w = Math.min(W * .7, H * .56 / ar); return [{ mark: 'ati', w, x: (W - w) / 2, y: (H - w * ar) / 2 }]; } }); t.resize(); });
     $('#grainR')?.addEventListener('input', e => { s.o.grain = +e.target.value; s.frame(); });
     $('#heatR')?.addEventListener('input', e => { s.o.heat = +e.target.value; s.frame(); });
   } catch (e) { console.warn('WebGL scan unavailable', e); }

@@ -150,21 +150,29 @@
 
 <section class="s dark" id="scan" data-n="05" data-t="Signal scan">
   <div class="wrap">
-    <header class="s-head grid"><p class="lab mono rv"><span class="n">05</span>Signal scan</p><h2 class="rv">Heat, read by a sensor.</h2><p class="intro rv rv-d1">The signature texture. A mark is read like a thermal scan: a rim of light on its edges, ambient heat around it and film grain over everything, mapped through one green ramp. Move the cursor across the stage.</p></header>
+    <header class="s-head grid"><p class="lab mono rv"><span class="n">05</span>Signal scan</p><h2 class="rv">Heat, read by a sensor.</h2><p class="intro rv rv-d1">The signature texture. A mark is read like a thermal scan: a rim of light on its edges and ambient heat around it, sampled through a 45° sensor grid and traced by isotherms, all mapped through one green ramp. Move the cursor across the stage.</p></header>
     <div class="scan-stage rv" id="scanStage"><canvas id="scanCanvas" aria-label="Interactive signal scan texture"></canvas>
+      <div class="iso mono tnum" id="isoLabels" aria-hidden="true"></div>
       <div class="hud mono"><span id="scanLabel">ati · dark ramp</span><span class="tnum" id="scanFps">Live</span></div></div>
     <div class="controls" role="group" aria-label="Scan controls">
       <div class="seg" role="group" aria-label="Mark"><button aria-pressed="true" data-mark="ati">ati</button><button aria-pressed="false" data-mark="jl">jl</button><button aria-pressed="false" data-mark="wm">Wordmark</button></div>
       <div class="seg" role="group" aria-label="Ramp"><button aria-pressed="true" data-mode="0">Dark</button><button aria-pressed="false" data-mode="1">Light</button></div>
+      <div class="seg" role="group" aria-label="Render"><button aria-pressed="true" data-style="1">Screen</button><button aria-pressed="false" data-style="0">Smooth</button></div>
     </div>
     <div class="ramps">
-      <div class="rv"><span class="mono mute">Dark ramp</span><div class="ramp" style="background:url(img/ramp-dark.jpg) center/cover;margin-top:10px"><div class="stops"><span style="left:2%">Ink 0</span><span style="left:40%">Deep 0.40</span><span style="left:74%">Signal 0.74</span><span style="left:96%">Pale 1</span></div></div></div>
-      <div class="rv rv-d1"><span class="mono mute">Light ramp</span><div class="ramp" style="background:url(img/ramp-light.jpg) center/cover;margin-top:10px"><div class="stops"><span style="left:3%">Paper 0</span><span style="left:34%">Pale 0.34</span><span style="left:72%">Signal 0.72</span><span style="left:96%">Deep 1</span></div></div></div>
+      <div class="rv"><span class="mono mute">Dark ramp</span><div class="ramp" style="margin-top:10px"><canvas data-ramp="0" aria-hidden="true"></canvas><div class="stops"><span style="left:2%">Ink 0</span><span style="left:40%">Deep 0.40</span><span style="left:74%">Signal 0.74</span><span style="left:96%">Pale 1</span></div></div></div>
+      <div class="rv rv-d1"><span class="mono mute">Light ramp</span><div class="ramp" style="margin-top:10px"><canvas data-ramp="1" aria-hidden="true"></canvas><div class="stops"><span style="left:3%">Paper 0</span><span style="left:34%">Pale 0.34</span><span style="left:72%">Signal 0.72</span><span style="left:96%">Deep 1</span></div></div></div>
     </div>
-    <ul class="rules" style="margin-top:72px">
+    <div class="sub" style="margin-top:88px"><h3>Anatomy</h3><span class="mono mute">Three layers · one ramp</span></div>
+    <div class="layers">
+      <figure class="rv"><div class="lay"><canvas data-layer="1" aria-label="Field layer"></canvas><span class="mono">L1</span></div><figcaption><b>Field</b>Rim light on the mark and ambient heat around it. Isotherms trace the halo at four fixed levels as hairlines.</figcaption></figure>
+      <figure class="rv rv-d1"><div class="lay"><canvas data-layer="2" aria-label="Screen layer"></canvas><span class="mono">L2</span></div><figcaption><b>Screen</b>One reading per cell on a 45° grid, the same angle as the facet cut. Each diamond’s area follows the heat, so the image holds in one colour.</figcaption></figure>
+      <figure class="rv rv-d2"><div class="lay"><canvas data-layer="0" aria-label="Composite"></canvas><span class="mono">L1 + L2 + grain</span></div><figcaption><b>Composite</b>Field under screen, with 3–6% film grain on top. This is the version that ships.</figcaption></figure>
+    </div>
+    <ul class="rules" style="margin-top:var(--g)">
       <li class="rv"><b>Scan the marks, not photos</b><p>The scan source is always a brand shape: ati, jl, the wordmark or data bars.</p></li>
       <li class="rv rv-d1"><b>One scan per surface</b><p>Pair it with flat ink or paper. Never stack two scans.</p></li>
-      <li class="rv rv-d2"><b>Grain 4–8%</b><p>Enough to feel printed, never enough to read as noise.</p></li>
+      <li class="rv rv-d2"><b>Fine screen, light grain</b><p>Cell = 1/288 of the long side (5 px at 1440). Grain stays at 3–6%: enough to feel printed, never enough to read as noise.</p></li>
     </ul>
     <div class="sub"><h3>Focus &amp; blur</h3><span class="mono mute">One thing in focus</span></div>
     <div class="focus-stage rv">
