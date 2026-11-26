@@ -13,29 +13,51 @@
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+  <symbol id="i-substack" viewBox="0 0 24 24"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></symbol>
+  <symbol id="i-youtube" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
+</svg>
 <a class="skip" href="#main">Skip to content</a>
 <nav class="bar" aria-label="Primary">
   <a class="brand" href="#top" aria-label="Jon Lamb, top"><img src="logos/jl-monogram-white.svg" alt="" width="22" height="26"><span class="mono">Jon Lamb</span></a>
-  <div class="links mono"><a href="#about">About</a><a href="#focus">Focus</a><a href="#work">Work</a><a href="#writing">Writing</a><a href="#contact">Contact</a></div>
+  <div class="links mono"><a href="#about">About</a><a href="#work">Work</a><a href="#media">Media</a><a href="#writing">Writing</a><a href="#connect">Connect</a></div>
 </nav>
 
 <header class="hero" id="top">
   <div class="fallback" aria-hidden="true"></div>
   <canvas id="heroScan" aria-hidden="true"></canvas>
   <div class="inner">
-    <div class="meta mono">
-      <div><p><strong>Now</strong>EVP, Ikon Technologies</p></div>
-      <div><p><strong>Building</strong>Coverage in a Click</p></div>
-      <div><p><strong>Writing</strong>AutoTech Insights</p></div>
-    </div>
-    <div class="title">
+    <div class="copy">
       <p class="mono kicker">Founder · Operator · Investor</p>
       <h1>Jon Lamb</h1>
-    </div>
-    <div class="foot">
       <p class="tag">I build the intelligence and transaction layers that connect consumers, retailers, lenders and insurers in automotive.</p>
-      <div class="cta mono"><a class="btn facet" href="https://www.autotechinsights.com/" target="_blank" rel="noopener">Read AutoTech Insights ↗</a><a class="ghost" href="https://www.linkedin.com/in/mrjonlamb/" target="_blank" rel="noopener">LinkedIn ↗</a></div>
+      <div class="cta mono"><a class="btn facet" href="https://www.autotechinsights.com/subscribe" target="_blank" rel="noopener">Subscribe to AutoTech Insights ↗</a><a class="ghost" href="#media">Watch the interview ↓</a></div>
+      <ul class="soc" aria-label="Social profiles">
+        <li><a href="https://www.linkedin.com/in/mrjonlamb/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg><use href="#i-linkedin"/></svg></a></li>
+        <li><a href="https://x.com/mrjonlamb" target="_blank" rel="noopener" aria-label="X"><svg><use href="#i-x"/></svg></a></li>
+        <li><a href="https://www.autotechinsights.com/" target="_blank" rel="noopener" aria-label="Substack"><svg><use href="#i-substack"/></svg></a></li>
+        <li><a href="https://www.youtube.com/watch?v=ZEUnqaZcvlQ" target="_blank" rel="noopener" aria-label="YouTube interview"><svg><use href="#i-youtube"/></svg></a></li>
+        <li><a href="https://github.com/mrjonlamb" target="_blank" rel="noopener" aria-label="GitHub"><svg><use href="#i-github"/></svg></a></li>
+      </ul>
     </div>
+    <figure class="hp">
+      <div class="pf"><canvas data-photo="img/jon-lamb-portrait.jpg" data-treat="screen" data-cell="4.4" data-fy=".5" role="img" aria-label="Portrait of Jon Lamb"></canvas></div>
+      <figcaption class="mono"><span>Now</span>EVP, Ikon Technologies</figcaption>
+    </figure>
+  </div>
+  <div class="strip">
+    <p class="mono">Led, built &amp; advised</p>
+    <ul>
+      <li><a href="https://www.ikontechnologies.com/" target="_blank" rel="noopener"><img src="logos/companies/ikon-technologies.svg" alt="Ikon Technologies" style="--h:44px"></a></li>
+      <li><a href="https://coverageinaclick.com/" target="_blank" rel="noopener"><img src="logos/companies/coverage-in-a-click.svg" alt="Coverage in a Click" style="--h:36px"></a></li>
+      <li><a href="https://www.dealercontrolledsolutions.com/" target="_blank" rel="noopener"><img src="logos/companies/dealer-controlled-solutions.svg" alt="Dealer Controlled Solutions" style="--h:27px"></a></li>
+      <li><a href="https://www.autotechinsights.com/" target="_blank" rel="noopener"><img src="logos/ati-wordmark-horizontal-white.svg" alt="AutoTech Insights" style="--h:17px"></a></li>
+      <li><a href="https://drivrzfinancial.com/" target="_blank" rel="noopener"><img src="logos/companies/drivrz-financial.png" alt="Drivrz Financial" style="--h:17px"></a></li>
+      <li><a href="https://www.affinitiv.com/" target="_blank" rel="noopener"><img src="logos/companies/affinitiv.svg" alt="Affinitiv" style="--h:23px"></a></li>
+    </ul>
   </div>
 </header>
 
@@ -44,70 +66,141 @@
   <div class="wrap">
     <header class="s-head grid"><p class="lab mono"><span class="n">01</span>About</p><h2>25 years where automotive meets fintech, insurtech and connected vehicles.</h2></header>
     <div class="grid about">
-      <figure class="portrait"><div class="pf"><canvas data-photo="img/jon-lamb-portrait.jpg" data-treat="screen" data-cell="4.4" data-fy=".5" role="img" aria-label="Portrait of Jon Lamb"></canvas></div><figcaption class="mono mute">Jon Lamb · 2026</figcaption></figure>
       <div class="bio">
-        <p class="lead">For over 25 years I’ve worked at the intersection of automotive, mobility, fintech, insurtech and emerging technology.</p>
-        <p>I help companies navigate complex market transitions, build scalable products, and modernize how revenue, risk and customer engagement are orchestrated in the automotive ecosystem.</p>
-        <p>I specialize in product strategy, AI-native platform development and marketplace design, with a focus on connected vehicle data, embedded finance and lifecycle retention systems.</p>
-        <p>Right now I’m focused on how AI, identity, telematics and embedded commerce are reshaping automotive retail, fixed operations, lending, insurance and mobility services.</p>
-        <p>Away from the work, I’m a dad and a day trader. Both keep me honest about risk.</p>
+        <p>I help companies navigate complex market transitions, build scalable products, and modernize how revenue, risk and customer engagement are orchestrated across the automotive ecosystem.</p>
+        <p>Right now I’m focused on how AI, identity, telematics and embedded commerce are reshaping retail, fixed operations, lending and insurance. Away from the work, I’m a dad and a day trader. Both keep me honest about risk.</p>
       </div>
+      <ul class="facts">
+        <li><b class="tnum">25+</b><span>years in automotive and mobility</span></li>
+        <li><b class="tnum">2×</b><span>founder</span></li>
+        <li><b class="tnum">1</b><span>patent, digital attribution</span></li>
+        <li><b>Dad</b><span>and day trader</span></li>
+      </ul>
     </div>
-    <ul class="facts">
-      <li><b class="tnum">25+</b><span>years in automotive and mobility</span></li>
-      <li><b class="tnum">2×</b><span>founder</span></li>
-      <li><b class="tnum">1</b><span>patent, digital attribution systems</span></li>
-      <li><b>Dad</b><span>and day trader, outside the day job</span></li>
-    </ul>
+    <div class="grid focus">
+      <p class="mono mute">What I work on</p>
+      <ul class="tags">
+        <li>AI product strategy</li><li>Marketplaces &amp; platforms</li><li>Automotive retail</li><li>Insurtech &amp; fintech</li><li>Connected vehicle data</li><li>Go-to-market</li><li>Customer retention</li>
+      </ul>
+    </div>
   </div>
 </section>
 
-<section class="s dark" id="focus">
+<section class="s tint" id="work">
   <div class="wrap">
-    <header class="s-head grid"><p class="lab mono"><span class="n">02</span>Focus</p><h2>What I work on.</h2><p class="intro">As a founder, chief product officer and strategic advisor, I work with organizations from early-stage startups to established technology companies.</p></header>
-    <ul class="focus">
-      <li><span class="mono">AI</span><b>AI product strategy and orchestration systems</b></li>
-      <li><span class="mono">Platforms</span><b>Marketplace and platform business models</b></li>
-      <li><span class="mono">Retail</span><b>Automotive retail and mobility infrastructure</b></li>
-      <li><span class="mono">Finance</span><b>Insurtech and fintech integrations</b></li>
-      <li><span class="mono">Vehicle data</span><b>Connected vehicle and telematics ecosystems</b></li>
-      <li><span class="mono">Go-to-market</span><b>GTM architecture and distribution strategy</b></li>
-      <li><span class="mono">Retention</span><b>Customer retention and deterministic engagement systems</b></li>
-    </ul>
-  </div>
-</section>
-
-<section class="s" id="work">
-  <div class="wrap">
-    <header class="s-head grid"><p class="lab mono"><span class="n">03</span>Work</p><h2>Operator first.</h2></header>
+    <header class="s-head grid"><p class="lab mono"><span class="n">02</span>Work</p><h2>Operator first.</h2></header>
     <div class="sub"><h3>Now</h3><span class="mono mute">Current roles</span></div>
-    <ol class="roles">
-      <li><span class="y mono tnum">2025 –</span><span class="c">Ikon Technologies</span><span class="r">EVP of Sales &amp; Partnerships</span><span class="d">Commercializing connected-vehicle intelligence, atlas.ai and RetentionOS with automotive retailers.</span></li>
-      <li><span class="y mono tnum">2022 –</span><span class="c">Coverage in a Click</span><span class="r">Co-founder &amp; Chief Product Officer</span><span class="d">A digital marketplace for automotive protection and F&amp;I products.</span></li>
-      <li><span class="y mono tnum">2023 –</span><span class="c">DCS Dealer Controlled Solutions</span><span class="r">Strategic Advisor</span><span class="d">Dealer-controlled lending and AI-powered underwriting.</span></li>
-      <li><span class="y mono tnum">2019 –</span><span class="c">AutoTech Insights</span><span class="r">Founder</span><span class="d">Publication and advisory on the technology, companies and capital reshaping mobility.</span></li>
-    </ol>
+    <ul class="cos">
+      <li><a class="co" href="https://www.ikontechnologies.com/" target="_blank" rel="noopener">
+        <span class="logo"><img src="logos/companies/ikon-technologies.svg" alt="Ikon Technologies" style="--h:54px"></span>
+        <span class="y mono tnum">2025 –</span>
+        <b>EVP of Sales &amp; Partnerships</b>
+        <span class="d">Commercializing connected-vehicle intelligence, atlas.ai and RetentionOS with automotive retailers.</span>
+        <span class="go mono">ikontechnologies.com <i>↗</i></span></a></li>
+      <li><a class="co" href="https://coverageinaclick.com/" target="_blank" rel="noopener">
+        <span class="logo"><img src="logos/companies/coverage-in-a-click.svg" alt="Coverage in a Click" style="--h:44px"></span>
+        <span class="y mono tnum">2022 –</span>
+        <b>Co-founder &amp; Chief Product Officer</b>
+        <span class="d">A digital marketplace for automotive protection and F&amp;I products.</span>
+        <span class="go mono">coverageinaclick.com <i>↗</i></span></a></li>
+      <li><a class="co" href="https://www.dealercontrolledsolutions.com/" target="_blank" rel="noopener">
+        <span class="logo"><img src="logos/companies/dealer-controlled-solutions.svg" alt="DCS Dealer Controlled Solutions" style="--h:34px"></span>
+        <span class="y mono tnum">2023 –</span>
+        <b>Strategic Advisor</b>
+        <span class="d">Dealer-controlled lending and AI-powered underwriting.</span>
+        <span class="go mono">dealercontrolledsolutions.com <i>↗</i></span></a></li>
+      <li><a class="co" href="https://www.autotechinsights.com/" target="_blank" rel="noopener">
+        <span class="logo"><img src="logos/ati-wordmark-horizontal-ink.svg" alt="AutoTech Insights" style="--h:19px"></span>
+        <span class="y mono tnum">2019 –</span>
+        <b>Founder</b>
+        <span class="d">Publication and advisory on the technology, companies and capital reshaping mobility.</span>
+        <span class="go mono">autotechinsights.com <i>↗</i></span></a></li>
+    </ul>
     <div class="sub"><h3>Before</h3><span class="mono mute">Selected</span></div>
-    <ol class="roles">
-      <li><span class="y mono tnum">2020 – 22</span><span class="c">Drivrz Financial</span><span class="r">Chief Executive Officer</span><span class="d">Grew revenue 690% in 2021; recognized by the TSX Venture 50.</span></li>
-      <li><span class="y mono tnum">2018 – 23</span><span class="c">Hundy</span><span class="r">Strategic Advisor</span><span class="d">Peer-to-peer lending on a mobile money app.</span></li>
-      <li><span class="y mono tnum">2014 – 17</span><span class="c">Transparency AI</span><span class="r">Founder &amp; CEO</span><span class="d">Individual-level marketing attribution and analytics; later acquired.</span></li>
-      <li><span class="y mono tnum">2011 – 13</span><span class="c">Moore &amp; Scarry Advertising</span><span class="r">President</span><span class="d">Direct response and digital agency with over $90M in capitalized billings.</span></li>
+    <ul class="cos sm">
+      <li><a class="co" href="https://drivrzfinancial.com/" target="_blank" rel="noopener">
+        <span class="logo"><img src="logos/companies/drivrz-financial.png" alt="Drivrz Financial" style="--h:19px"></span>
+        <span class="y mono tnum">2020 – 22</span>
+        <b>Chief Executive Officer</b>
+        <span class="d">Grew revenue 690% in 2021; recognized by the TSX Venture 50.</span>
+        <span class="go mono">drivrzfinancial.com <i>↗</i></span></a></li>
+      <li><div class="co">
+        <span class="logo"><span class="nm">Transparency AI</span></span>
+        <span class="y mono tnum">2014 – 17</span>
+        <b>Founder &amp; CEO</b>
+        <span class="d">Individual-level marketing attribution and analytics; later acquired.</span></div></li>
+      <li><div class="co">
+        <span class="logo"><span class="nm">Hundy</span></span>
+        <span class="y mono tnum">2018 – 23</span>
+        <b>Strategic Advisor</b>
+        <span class="d">Peer-to-peer lending on a mobile money app.</span></div></li>
+      <li><a class="co" href="https://www.affinitiv.com/" target="_blank" rel="noopener">
+        <span class="logo"><img src="logos/companies/affinitiv.svg" alt="Affinitiv" style="--h:26px"></span>
+        <span class="y mono tnum">2011 – 13</span>
+        <b>President, Moore &amp; Scarry Advertising</b>
+        <span class="d">Direct response and digital agency with over $90M in capitalized billings. Now part of Affinitiv.</span>
+        <span class="go mono">affinitiv.com <i>↗</i></span></a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="s dark" id="media">
+  <div class="wrap">
+    <header class="s-head grid"><p class="lab mono"><span class="n">03</span>Media</p><h2>In the media.</h2><p class="intro">Interviews, bylines and announcements from the trade and financial press.</p></header>
+    <div class="grid vids">
+      <article class="vid lead">
+        <a class="thumb" href="https://www.youtube.com/watch?v=ZEUnqaZcvlQ" target="_blank" rel="noopener" aria-label="Watch Executive Spotlight with Jon Lamb on YouTube">
+          <img src="img/media/autosuccess-executive-spotlight.jpg" alt="AutoSuccess Executive Spotlight title card with Jon Lamb" width="1280" height="720" loading="lazy">
+          <span class="play" aria-hidden="true"></span>
+        </a>
+        <p class="mono src"><span>AutoSuccess</span>Executive Spotlight · Jul 22, 2024</p>
+        <h3><a href="https://www.youtube.com/watch?v=ZEUnqaZcvlQ" target="_blank" rel="noopener">Executive Spotlight with Jon Lamb of Coverage in a Click</a></h3>
+        <p class="d">With host Brian Ankney, on the marketing gap between front-end sales and service operations, and what digitizing the service lane does for a store.</p>
+        <p class="acts mono"><a href="https://www.youtube.com/watch?v=ZEUnqaZcvlQ" target="_blank" rel="noopener">Watch on YouTube ↗</a><a href="https://www.autosuccessonline.com/executive-spotlight-jon-lamb-coverage-click/" target="_blank" rel="noopener">Read the feature ↗</a></p>
+      </article>
+      <article class="vid">
+        <a class="thumb" href="https://www.cbtnews.com/is-your-dealership-missing-out-on-opportunities-for-digital-car-leasing/" target="_blank" rel="noopener" aria-label="Watch the CBT News segment">
+          <img src="img/media/cbt-news-used-car-leasing.jpg" alt="CBT News panel with Jim Fitzpatrick, Jon Lamb, Joel Bassam and Rudi Thun" width="1280" height="720" loading="lazy">
+          <span class="play" aria-hidden="true"></span>
+        </a>
+        <p class="mono src"><span>CBT News</span>Jul 1, 2021</p>
+        <h3><a href="https://www.cbtnews.com/is-your-dealership-missing-out-on-opportunities-for-digital-car-leasing/" target="_blank" rel="noopener">Is your dealership missing out on digital used car leasing?</a></h3>
+        <p class="d">With Jim Fitzpatrick, Rudi Thun of Roadster and Joel Bassam of Easterns Automotive Group.</p>
+        <p class="acts mono"><a href="https://www.cbtnews.com/is-your-dealership-missing-out-on-opportunities-for-digital-car-leasing/" target="_blank" rel="noopener">Watch on CBT News ↗</a></p>
+      </article>
+    </div>
+    <div class="sub"><h3>Press</h3><span class="mono mute">Bylines &amp; announcements</span></div>
+    <ol class="press">
+      <li><a href="https://www.autosuccessonline.com/captive-lending-for-used-vehicle-sales-is-a-big-upside-for-dealerships/" target="_blank" rel="noopener"><span class="o mono">AutoSuccess<em>Byline</em></span><span class="h">Captive Lending for Used Vehicle Sales is a Big Upside for Dealerships</span><span class="k mono tnum">Oct 20, 2021</span><i>↗</i></a></li>
+      <li><a href="https://www.nasdaq.com/press-release/powerband-announces-former-musa-auto-finance-ceo-stepping-down-2021-04-30" target="_blank" rel="noopener"><span class="o mono">Nasdaq<em>Press release</em></span><span class="h">Jon Lamb appointed CEO of Drivrz Financial</span><span class="k mono tnum">Apr 30, 2021</span><i>↗</i></a></li>
+      <li><a href="https://www.autoremarketing.com/autofinjournal/musa-auto-finance-set-become-drivrz-financial/" target="_blank" rel="noopener"><span class="o mono">Auto Remarketing<em>News</em></span><span class="h">MUSA Auto Finance set to become DRIVRZ Financial</span><span class="k mono tnum">2021</span><i>↗</i></a></li>
+      <li><a href="https://finance.yahoo.com/news/powerband-hires-jon-lamb-serve-140000284.html" target="_blank" rel="noopener"><span class="o mono">Yahoo Finance<em>Press release</em></span><span class="h">PowerBand Hires Jon Lamb to Serve as President of North American Operations</span><span class="k mono tnum">Jan 12, 2021</span><i>↗</i></a></li>
     </ol>
   </div>
 </section>
 
-<section class="s tint" id="writing">
+<section class="s" id="writing">
   <div class="wrap">
     <header class="s-head grid"><p class="lab mono"><span class="n">04</span>Writing</p><h2>AutoTech Insights.</h2><p class="intro">I write about the investors, innovators and founders reshaping automotive. No pay-to-play, just what the numbers and the product actually say.</p></header>
-    <ol class="heads">
-      <li><a href="https://www.autotechinsights.com/p/the-margin-mirage-why-every-public" target="_blank" rel="noopener"><span class="k mono tnum">Aug 31, 2026</span><span><span class="h">The Margin Mirage: Why Every Public Dealer Group’s Profits Fell in Q2 2026</span><span class="d">Revenue grew at five of the seven largest public auto retailers this quarter. Profit fell at all seven.</span></span></a></li>
-      <li><a href="https://www.autotechinsights.com/p/ecosystems-cars" target="_blank" rel="noopener"><span class="k mono tnum">Jun 1, 2026</span><span><span class="h">Ecosystems &gt; Cars</span><span class="d">Build a better vehicle. The rest would follow.</span></span></a></li>
-      <li><a href="https://www.autotechinsights.com/p/before-ai-agents-there-were-algorithms" target="_blank" rel="noopener"><span class="k mono tnum">May 19, 2026</span><span><span class="h">Before AI Agents, There Were Algorithms</span><span class="d">Why I open sourced attribution.</span></span></a></li>
-      <li><a href="https://www.autotechinsights.com/p/the-connected-car-is-not-the-story" target="_blank" rel="noopener"><span class="k mono tnum">Mar 30, 2026</span><span><span class="h">The Connected Car Is Not the Story. Control Is.</span><span class="d">As connectivity becomes standard on new vehicles, the real battle is over who controls the signal, the messaging, and the customer after the sale.</span></span></a></li>
-      <li><a href="https://www.autotechinsights.com/p/you-bought-the-tool-you-skipped-the" target="_blank" rel="noopener"><span class="k mono tnum">Feb 18, 2026</span><span><span class="h">You Bought the Tool. You Skipped the Point.</span><span class="d">Automotive retail has a technology addiction and a people problem.</span></span></a></li>
-    </ol>
-    <a class="more mono" href="https://www.autotechinsights.com/" target="_blank" rel="noopener">Subscribe on Substack ↗</a>
+    <a class="feat grid" href="https://www.autotechinsights.com/p/the-margin-mirage-why-every-public" target="_blank" rel="noopener">
+      <span class="cover"><img src="img/covers/margin-mirage.jpg" alt="" width="1200" height="750" loading="lazy"></span>
+      <span class="body">
+        <span class="mono k"><em>Latest</em>Aug 31, 2026</span>
+        <span class="h">The Margin Mirage: Why Every Public Dealer Group’s Profits Fell in Q2 2026</span>
+        <span class="d">Revenue grew at five of the seven largest public auto retailers this quarter. Profit fell at all seven.</span>
+        <span class="go mono">Read the issue <i>↗</i></span>
+      </span>
+    </a>
+    <ul class="posts">
+      <li><a href="https://www.autotechinsights.com/p/ecosystems-cars" target="_blank" rel="noopener"><span class="cover"><img src="img/covers/ecosystems-cars.jpg" alt="" width="1200" height="750" loading="lazy"></span><span class="mono k"><em>Most liked</em>Jun 1, 2026</span><span class="h">Ecosystems &gt; Cars</span><span class="d">Build a better vehicle. The rest would follow.</span></a></li>
+      <li><a href="https://www.autotechinsights.com/p/before-ai-agents-there-were-algorithms" target="_blank" rel="noopener"><span class="cover"><img src="img/covers/before-ai-agents.jpg" alt="" width="1200" height="750" loading="lazy"></span><span class="mono k">May 19, 2026</span><span class="h">Before AI Agents, There Were Algorithms</span><span class="d">Why I open sourced attribution.</span></a></li>
+      <li><a href="https://www.autotechinsights.com/p/the-connected-car-is-not-the-story" target="_blank" rel="noopener"><span class="cover"><img src="img/covers/connected-car-control.jpg" alt="" width="1200" height="750" loading="lazy"></span><span class="mono k">Mar 30, 2026</span><span class="h">The Connected Car Is Not the Story. Control Is.</span><span class="d">The real battle is over who controls the signal, the messaging and the customer after the sale.</span></a></li>
+      <li><a href="https://www.autotechinsights.com/p/you-bought-the-tool-you-skipped-the" target="_blank" rel="noopener"><span class="cover"><img src="img/covers/bought-the-tool.jpg" alt="" width="1200" height="750" loading="lazy"></span><span class="mono k">Feb 18, 2026</span><span class="h">You Bought the Tool. You Skipped the Point.</span><span class="d">Automotive retail has a technology addiction and a people problem.</span></a></li>
+    </ul>
+    <div class="subscribe">
+      <p>New issues land in your inbox. Free to read.</p>
+      <div class="cta mono"><a class="btn facet" href="https://www.autotechinsights.com/subscribe" target="_blank" rel="noopener">Subscribe on Substack ↗</a><a class="ghost" href="https://www.autotechinsights.com/archive" target="_blank" rel="noopener">All issues ↗</a></div>
+    </div>
   </div>
 </section>
 
@@ -117,20 +210,21 @@
       <p class="lab mono"><span class="n">05</span>Open source</p>
       <div class="body">
         <h2>Trust your media buys? <span class="hl">Don’t.</span></h2>
-        <p>I laid out the exact data engineering process on GitHub so any retailer can run an independent, closed-loop attribution report: DMS sales matched to publisher logs at household level, with the VIN resolving shared-network false positives. No vanity metrics. No third-party cookies.</p>
-        <a class="btn facet mono" href="https://github.com/mrjonlamb/dms-identity-resolution-attribution" target="_blank" rel="noopener">View the repository ↗</a>
+        <p>I published the full data engineering process so any retailer can run an independent, closed-loop attribution report: DMS sales matched to publisher logs at household level. No vanity metrics. No third-party cookies.</p>
+        <a class="btn facet mono" href="https://github.com/mrjonlamb/dms-identity-resolution-attribution" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg>View the repository ↗</a>
       </div>
     </div>
   </div>
 </section>
 
-<section class="s" id="contact">
+<section class="s tint" id="connect">
   <div class="wrap">
-    <header class="s-head grid"><p class="lab mono"><span class="n">06</span>Contact</p><h2>Let’s connect.</h2><p class="intro">If you’re focused on where automotive technology creates real leverage, the fastest way to reach me is LinkedIn.</p></header>
-    <ul class="links3">
-      <li><a href="https://www.linkedin.com/in/mrjonlamb/" target="_blank" rel="noopener"><span class="mono mute">LinkedIn</span><b>linkedin.com/in/mrjonlamb</b><i>↗</i></a></li>
-      <li><a href="https://x.com/mrjonlamb" target="_blank" rel="noopener"><span class="mono mute">X</span><b>@mrjonlamb</b><i>↗</i></a></li>
-      <li><a href="https://www.autotechinsights.com/" target="_blank" rel="noopener"><span class="mono mute">Publication</span><b>autotechinsights.com</b><i>↗</i></a></li>
+    <header class="s-head grid"><p class="lab mono"><span class="n">06</span>Connect</p><h2>Let’s connect.</h2><p class="intro">If you’re focused on where automotive technology creates real leverage, the fastest way to reach me is LinkedIn.</p></header>
+    <ul class="socials">
+      <li><a href="https://www.linkedin.com/in/mrjonlamb/" target="_blank" rel="noopener"><svg><use href="#i-linkedin"/></svg><span class="mono mute">LinkedIn</span><b>Jon Lamb</b><span class="go mono">Connect <i>↗</i></span></a></li>
+      <li><a href="https://x.com/mrjonlamb" target="_blank" rel="noopener"><svg><use href="#i-x"/></svg><span class="mono mute">X</span><b>@mrjonlamb</b><span class="go mono">Follow <i>↗</i></span></a></li>
+      <li><a href="https://www.autotechinsights.com/subscribe" target="_blank" rel="noopener"><svg><use href="#i-substack"/></svg><span class="mono mute">Substack</span><b>AutoTech Insights</b><span class="go mono">Subscribe <i>↗</i></span></a></li>
+      <li><a href="https://github.com/mrjonlamb" target="_blank" rel="noopener"><svg><use href="#i-github"/></svg><span class="mono mute">GitHub</span><b>mrjonlamb</b><span class="go mono">View code <i>↗</i></span></a></li>
     </ul>
   </div>
 </section>
@@ -141,7 +235,7 @@
   <div class="row mono">
     <div>Jon Lamb · Founder, Operator, Investor</div>
     <div><a href="https://www.autotechinsights.com/" target="_blank" rel="noopener">AutoTech Insights ↗</a></div>
-    <div><a href="https://www.linkedin.com/in/mrjonlamb/" target="_blank" rel="noopener">LinkedIn ↗</a></div>
+    <div><a href="https://www.linkedin.com/in/mrjonlamb/" target="_blank" rel="noopener">LinkedIn ↗</a> &nbsp; <a href="https://x.com/mrjonlamb" target="_blank" rel="noopener">X ↗</a></div>
     <div class="tnum">© 2026</div>
   </div>
 </footer>

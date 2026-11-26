@@ -162,9 +162,14 @@ ScanClass = Scan;
 marksP.then(() => {
   try {
     const hero = $('#heroScan'); if (!hero) return;
-    const hs = new Scan(hero, { track: $('#top'), heat: .5, grain: .05, place: (W, H) => { const mk = MARKS.jl, ar = (mk.b[3] - mk.b[1]) / (mk.b[2] - mk.b[0]), mob = W < 760;
-      const w = mob ? W * .3 : Math.min(W * .17, H * .46 / ar); return [{ mark: 'jl', w, x: mob ? W * .6 : W - w - W * .13, y: mob ? H * .14 : H * .2 }]; } });
+    /* the monogram sits behind the portrait, so the heat reads as coming off it */
+    const top = $('#top'), pf = $('.hero .pf');
+    const hs = new Scan(hero, { track: top, heat: .5, grain: .05, place: (W, H) => { const mk = MARKS.jl, ar = (mk.b[3] - mk.b[1]) / (mk.b[2] - mk.b[0]);
+      const hr = top.getBoundingClientRect(), pr = pf.getBoundingClientRect(), sx = W / hr.width, sy = H / hr.height;
+      const w = pr.width * sx * .97, cx = (pr.left - hr.left + pr.width / 2) * sx, cy = (pr.top - hr.top + pr.height / 2) * sy;
+      return [{ mark: 'jl', w, x: cx - w / 2, y: cy - w * ar / 2 }]; } });
     hs.resize(); hero.parentElement.querySelector('.fallback').style.display = 'none';
+    document.fonts && document.fonts.ready.then(() => hs.resize());
   } catch (e) { console.warn('WebGL scan unavailable', e); }
 });
 })();
