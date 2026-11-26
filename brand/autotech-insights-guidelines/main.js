@@ -6,9 +6,11 @@ const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [..
 
 /* ---------- progress + current section ---------- */
 const prog = $('.progress'), nowNum = $('#nowNum'), nowTtl = $('#nowTtl');
+const topBar = $('.bar');
 const onScroll = () => {
   const h = document.documentElement; const p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
   prog.style.transform = `scaleX(${p})`;
+  if (topBar) topBar.classList.toggle('on', h.scrollTop > 12);
 };
 addEventListener('scroll', onScroll, { passive: true }); onScroll();
 const secs = $$('[data-n]');

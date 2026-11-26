@@ -3,6 +3,8 @@
 const RM = matchMedia('(prefers-reduced-motion: reduce)');
 const reduced = () => RM.matches;
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const bar = $('.bar'), onBar = () => bar && bar.classList.toggle('on', (document.documentElement.scrollTop || document.body.scrollTop) > 12);
+addEventListener('scroll', onBar, { passive: true }); onBar();
 /* ---------- ramp swatches: the same 45 degree screen, drawn once on a 2D canvas ---------- */
 const STOPS = [[[11, 13, 16], [14, 59, 38], [31, 157, 85], [230, 244, 199], [.40, .74]], [[243, 243, 240], [230, 244, 199], [31, 157, 85], [14, 59, 38], [.34, .72]]];
 const rampRGB = (mode, f) => { const [a, b, d, e, [s1, s2]] = STOPS[mode]; const mx = (p, q, t) => p.map((v, i) => Math.round(v + (q[i] - v) * t));
